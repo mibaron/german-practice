@@ -22,8 +22,9 @@ Each verb appears as one card with all of its forms together:
 - Perfekt, when applicable
 
 The lesson data keeps both the `wir` and `sie/Sie` keys for compatibility with
-existing `data.js` files. The app displays and tests them as one group and
-normalizes `sie/Sie` to the `wir` form when custom data is loaded.
+existing `data.js` files, while the app displays and tests them as one group.
+The verb form is identical. For reflexive verbs, the combined answer preserves
+the required pronoun difference, for example `melden uns/sich an`.
 
 ## Controls
 
