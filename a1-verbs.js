@@ -6,7 +6,7 @@
     {label: 'ich', key: 'ich'},
     {label: 'du', key: 'du'},
     {label: 'er/sie/es', key: 'er/sie/es'},
-    {label: 'wir / sie / Sie', key: 'wir'},
+    {label: 'wir / sie / Sie', keys: ['wir', 'sie/Sie']},
     {label: 'ihr', key: 'ihr'}
   ];
   const REFLEXIVE = {
@@ -247,12 +247,23 @@
     pack: 'goethe-a1-verbs'
   }));
 
+  function practiceAnswer(item, group) {
+    if (!group.keys) return item.present[group.key];
+    const wirForm = item.present[group.keys[0]];
+    const sieForm = item.present[group.keys[1]];
+    if (wirForm === sieForm) return wirForm;
+    if (wirForm.replace(/\buns\b/g, 'sich') === sieForm) {
+      return wirForm.replace(/\buns\b/g, 'uns/sich');
+    }
+    return `${wirForm} / ${sieForm}`;
+  }
+
   const sentenceExercises = verbs.map((item, index) => {
     const group = PRACTICE_GROUPS[index % PRACTICE_GROUPS.length];
     return {
       type: `A1 verb: ${item.verb}`,
       question: `Conjugate in Präsens: ${group.label} → ? (${item.verb})`,
-      answer: item.present[group.key],
+      answer: practiceAnswer(item, group),
       explanation: `${item.verb} means “${item.meaning}”. Perfekt: ${item.perfekt}`,
       level: 'A1',
       pack: 'goethe-a1-verbs'
