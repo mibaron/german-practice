@@ -10,6 +10,21 @@ The current data includes a complete Goethe-based adult A1 verb pack.
 - `a1-verbs.js` — modular A1 verbs, conjugations, Perfekt forms and exercises
 - `A1_VERBS.md` — human-readable A1 verb list
 
+## Verb conjugation practice
+
+Each verb appears as one card with all of its forms together:
+
+- `ich`
+- `du`
+- `er/sie/es`
+- `wir / sie / Sie` (one combined field because these forms are identical)
+- `ihr`
+- Perfekt, when applicable
+
+The lesson data keeps both the `wir` and `sie/Sie` keys for compatibility with
+existing `data.js` files. The app displays and tests them as one group and
+normalizes `sie/Sie` to the `wir` form when custom data is loaded.
+
 ## Controls
 
 - Enter checks the typed answer.
@@ -47,7 +62,7 @@ loaded custom file is saved in that browser with `localStorage`.
 ## A1 verb pack
 
 - 152 teachable verb entries from the Goethe-Zertifikat A1: Start Deutsch 1 inventory
-- all six Präsens forms
+- all six Präsens data fields, with `wir` and `sie/Sie` combined in the interface
 - Perfekt forms
 - verb type and English meaning
 - 152 flashcards and 152 additional exercises
