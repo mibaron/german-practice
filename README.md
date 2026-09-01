@@ -26,12 +26,19 @@ existing `data.js` files, while the app displays and tests them as one group.
 The verb form is identical. For reflexive verbs, the combined answer preserves
 the required pronoun difference, for example `melden uns/sich an`.
 
-## Controls
+## Search and keyboard controls
+
+The practice panel includes autocomplete search for verbs and vocabulary cards.
+Selecting a result opens that exact item in Verb Quiz or Flashcards.
 
 - Enter checks the typed answer.
 - After a correct answer, press Enter again to open the next question.
 - Arrow Right opens the next practice item.
 - Arrow Left returns to the previous practice item.
+- `/` focuses practice search.
+- Up/Down selects an autocomplete result; Enter opens it.
+- `?` opens the keyboard-shortcuts guide.
+- Escape closes autocomplete results or the shortcut guide.
 - While editing a non-empty answer, the arrow keys retain their normal text-cursor behavior. After a correct answer, they navigate immediately.
 
 ## Lesson data
