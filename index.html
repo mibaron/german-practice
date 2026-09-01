@@ -129,6 +129,24 @@
       <div id="storageStatus" class="status" aria-live="polite">Checking browser storage…</div>
     </section>
 
+    <section class="backup" aria-labelledby="dataTitle">
+      <div class="backup-head">
+        <div>
+          <strong id="dataTitle">Lesson data</strong>
+          <div id="dataSourceStatus" class="small muted">Using bundled lesson data.</div>
+        </div>
+        <div class="actions" style="margin:0">
+          <button id="downloadDataBtn" class="btn" type="button">Download our data.js</button>
+          <button id="loadDataBtn" class="btn" type="button">Load my data.js</button>
+          <button id="bundledDataBtn" class="btn" type="button">Use bundled data</button>
+          <input id="lessonDataFile" class="hidden" type="file" accept=".js,.json,text/javascript,application/javascript,application/json">
+        </div>
+      </div>
+      <div id="dataStatus" class="status" aria-live="polite">
+        Custom files are parsed as lesson data and are never executed.
+      </div>
+    </section>
+
     <details>
       <summary>Verb reference table</summary>
       <div class="tablewrap">
@@ -144,7 +162,7 @@
   <script src="a1-verbs.js"></script>
   <script>
   (() => {
-    const DATA = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
+    let DATA = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
     if (!DATA) {
       document.getElementById('loadError').classList.remove('hidden');
       return;
@@ -152,10 +170,50 @@
 
     const STORAGE_KEY = 'germanPracticeProgressV1';
     const LEGACY_STORAGE_KEY = 'germanA1PracticeProgressV1';
+    const CUSTOM_DATA_STORAGE_KEY = 'germanPracticeCustomLessonDataV1';
     const SCHEMA_VERSION = 1;
     const people = ['ich','du','er/sie/es','wir','ihr','sie/Sie'];
     const modes = ['flash','verbs','grammar','sentences'];
     const $ = s => document.querySelector(s);
+
+    function cloneData(value){
+      return JSON.parse(JSON.stringify(value));
+    }
+    function normalizeLessonData(raw){
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+        throw new Error('The lesson file must contain one data object.');
+      }
+      const clean = cloneData(raw);
+      ['verbs','flashcards','grammar','sentences'].forEach(key => {
+        if (clean[key] == null) clean[key] = [];
+        if (!Array.isArray(clean[key])) throw new Error(key + ' must be an array.');
+      });
+      clean.meta = clean.meta && typeof clean.meta === 'object' ? clean.meta : {};
+      clean.verbs.forEach((item, index) => {
+        if (!item || typeof item.verb !== 'string' || !item.present || typeof item.present !== 'object') {
+          throw new Error('Invalid verb entry at position ' + (index + 1) + '.');
+        }
+        people.forEach(person => {
+          if (typeof item.present[person] !== 'string') {
+            throw new Error(item.verb + ' is missing the ' + person + ' form.');
+          }
+        });
+      });
+      return clean;
+    }
+
+    const BUNDLED_DATA = normalizeLessonData(DATA);
+    let customDataActive = false;
+    try {
+      const savedLessonData = localStorage.getItem(CUSTOM_DATA_STORAGE_KEY);
+      if (savedLessonData) {
+        DATA = normalizeLessonData(JSON.parse(savedLessonData));
+        customDataActive = true;
+      }
+    } catch (err) {
+      customDataActive = false;
+      DATA = cloneData(BUNDLED_DATA);
+    }
 
     function blankState(){
       return {
@@ -221,6 +279,7 @@
     let attempts = state.attempts;
     let flashOrder = [...Array(DATA.flashcards.length).keys()];
     let quizOrder = [];
+    let correctSubmitReadyForNext = false;
 
     function hashText(text){
       let h = 2166136261;
@@ -301,12 +360,23 @@
       });
       return out;
     }
-    const verbQs=buildVerbQuestions();
+    let verbQs=buildVerbQuestions();
 
     function currentList(){
       if(mode==='verbs') return verbQs;
       if(mode==='grammar') return DATA.grammar;
       return DATA.sentences;
+    }
+    function moveBy(delta){
+      const listLength = mode === 'flash' ? flashOrder.length : currentList().length;
+      if (!listLength) return;
+      index = (index + delta + listLength) % listLength;
+      if (mode === 'flash') {
+        showFlash();
+      } else {
+        if (!quizOrder.length || quizOrder.length !== currentList().length) makeQuizOrder();
+        showQuiz();
+      }
     }
     function hideFlashAnswer(){
       $('#flashAnswer').classList.add('hidden');
@@ -334,6 +404,7 @@
       $('#toggleQuizAnswer').textContent='Show answer';
     }
     function showQuiz(){
+      correctSubmitReadyForNext = false;
       const list=currentList();
       if(!list.length) return;
       if(!quizOrder.length || quizOrder.length!==list.length) makeQuizOrder();
@@ -442,9 +513,100 @@
       reader.readAsText(file);
     }
 
+    function setDataStatus(message, kind=''){
+      const el = $('#dataStatus');
+      el.textContent = message;
+      el.className = 'status' + (kind ? ' ' + kind : '');
+    }
+    function renderVerbTable(){
+      const tbody=$('#verbTableBody');
+      tbody.textContent='';
+      DATA.verbs.forEach(v=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML='<td><strong>'+v.verb+'</strong></td><td>'+(v.meaning||'')+'</td>'+
+          people.map(p=>'<td>'+v.present[p]+'</td>').join('')+
+          '<td>'+(v.perfekt||'—')+'</td>';
+        tbody.appendChild(tr);
+      });
+    }
+    function rebuildLessonViews(){
+      flashOrder=[...Array(DATA.flashcards.length).keys()];
+      quizOrder=[];
+      verbQs=buildVerbQuestions();
+      index=0;
+      renderVerbTable();
+      scoreUpdate();
+      switchMode(mode);
+    }
+    function activateLessonData(nextData, options={}){
+      DATA=normalizeLessonData(nextData);
+      customDataActive=Boolean(options.custom);
+      if (customDataActive) {
+        try {
+          localStorage.setItem(CUSTOM_DATA_STORAGE_KEY, JSON.stringify(DATA));
+        } catch (err) {
+          setDataStatus('Custom data loaded for this session, but the browser could not save it.', 'bad');
+        }
+      }
+      rebuildLessonViews();
+      $('#dataSourceStatus').textContent = customDataActive ?
+        'Using your custom lesson data.' : 'Using bundled lesson data.';
+      if (!options.quiet) {
+        setDataStatus(
+          customDataActive ? 'Custom data.js loaded safely.' : 'Bundled lesson data restored.',
+          'good'
+        );
+      }
+    }
+    function parseLessonDataFile(text){
+      const trimmed=String(text||'').trim();
+      if (!trimmed) throw new Error('The selected file is empty.');
+      if (trimmed.startsWith('{')) return normalizeLessonData(JSON.parse(trimmed));
+      const match=trimmed.match(/^(?:window\.)?(?:GERMAN_PRACTICE_DATA|GERMAN_A1_DATA)\s*=\s*([\s\S]*?)\s*;?\s*$/);
+      if (!match) {
+        throw new Error('Use JSON or a data.js assignment to GERMAN_PRACTICE_DATA.');
+      }
+      return normalizeLessonData(JSON.parse(match[1]));
+    }
+    function importLessonDataFile(file){
+      if (!file) return;
+      const reader=new FileReader();
+      reader.onload=()=>{
+        try {
+          activateLessonData(parseLessonDataFile(reader.result), {custom:true});
+        } catch (err) {
+          setDataStatus('Could not load data.js: '+(err.message||'invalid lesson data'), 'bad');
+        } finally {
+          $('#lessonDataFile').value='';
+        }
+      };
+      reader.onerror=()=>{
+        setDataStatus('Could not read the selected lesson file.', 'bad');
+        $('#lessonDataFile').value='';
+      };
+      reader.readAsText(file);
+    }
+    function downloadBundledData(){
+      const source='window.GERMAN_PRACTICE_DATA = '+JSON.stringify(BUNDLED_DATA,null,2)+';\n';
+      const blob=new Blob([source],{type:'text/javascript'});
+      const url=URL.createObjectURL(blob);
+      const link=document.createElement('a');
+      link.href=url;
+      link.download='german-practice-data.js';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      setDataStatus('Bundled data.js downloaded.', 'good');
+    }
+    function restoreBundledData(){
+      try { localStorage.removeItem(CUSTOM_DATA_STORAGE_KEY); } catch (err) {}
+      activateLessonData(cloneData(BUNDLED_DATA), {custom:false});
+    }
+
     document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>switchMode(b.dataset.mode)));
     $('#toggleFlashAnswer').addEventListener('click',toggleFlashAnswer);
-    $('#prevFlash').addEventListener('click',()=>{ index=(index-1+flashOrder.length)%flashOrder.length; showFlash(); });
+    $('#prevFlash').addEventListener('click',()=>moveBy(-1));
 
     $('#againFlash').addEventListener('click',()=>{
       const c=DATA.flashcards[flashOrder[index]];
@@ -472,6 +634,10 @@
 
     $('#quizPanel').addEventListener('submit',e=>{
       e.preventDefault();
+      if (correctSubmitReadyForNext) {
+        moveBy(1);
+        return;
+      }
       const q=currentList()[quizOrder[index]];
       const given=normalize($('#quizInput').value);
       const ans=normalize(q.answer);
@@ -481,8 +647,11 @@
       recordItem(currentItemKey(q), isCorrect);
       if(isCorrect){
         correct++;
-        $('#feedback').innerHTML='✅ <strong>Correct.</strong> '+(q.explanation||'');
+        correctSubmitReadyForNext = true;
+        $('#feedback').innerHTML='✅ <strong>Correct.</strong> '+(q.explanation||'')+
+          '<br><span class="muted">Press Enter again for the next question.</span>';
       }else{
+        correctSubmitReadyForNext = false;
         $('#feedback').innerHTML='❌ Not quite. Try again, or use “Show answer”.';
       }
       scoreUpdate();
@@ -490,7 +659,7 @@
     });
 
     $('#toggleQuizAnswer').addEventListener('click',toggleQuizAnswer);
-    $('#nextBtn').addEventListener('click',()=>{ index=(index+1)%quizOrder.length; showQuiz(); });
+    $('#nextBtn').addEventListener('click',()=>moveBy(1));
     $('#shuffleBtn').addEventListener('click',()=>{
       index=0;
       if(mode==='flash'){ shuffle(flashOrder); showFlash(); }
@@ -516,16 +685,25 @@
     $('#exportBtn').addEventListener('click',exportProgress);
     $('#importBtn').addEventListener('click',()=>$('#importFile').click());
     $('#importFile').addEventListener('change',e=>importProgressFile(e.target.files && e.target.files[0]));
+    $('#downloadDataBtn').addEventListener('click',downloadBundledData);
+    $('#loadDataBtn').addEventListener('click',()=>$('#lessonDataFile').click());
+    $('#lessonDataFile').addEventListener('change',e=>importLessonDataFile(e.target.files && e.target.files[0]));
+    $('#bundledDataBtn').addEventListener('click',restoreBundledData);
 
-    const tbody=$('#verbTableBody');
-    DATA.verbs.forEach(v=>{
-      const tr=document.createElement('tr');
-      tr.innerHTML='<td><strong>'+v.verb+'</strong></td><td>'+v.meaning+'</td>'+
-        people.map(p=>'<td>'+v.present[p]+'</td>').join('')+
-        '<td>'+v.perfekt+'</td>';
-      tbody.appendChild(tr);
+    document.addEventListener('keydown',e=>{
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      const target=e.target;
+      const isTextEditor=target && target.matches &&
+        target.matches('input:not([type="file"]), textarea, [contenteditable="true"]');
+      const hasEditableText=isTextEditor &&
+        String(target.value == null ? target.textContent || '' : target.value).length > 0;
+      if (hasEditableText && !correctSubmitReadyForNext) return;
+      e.preventDefault();
+      moveBy(e.key === 'ArrowRight' ? 1 : -1);
     });
 
+    renderVerbTable();
     scoreUpdate();
     switchMode(mode);
     if (storageWorks) {
@@ -533,6 +711,8 @@
     } else {
       setStatus('Browser storage is unavailable here. You can still practice and use Export/Import manually.', 'bad');
     }
+    $('#dataSourceStatus').textContent = customDataActive ?
+      'Using your saved custom lesson data.' : 'Using bundled lesson data.';
   })();
   </script>
 
