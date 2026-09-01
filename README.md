@@ -1,7 +1,4 @@
-GERMAN PRACTICE
-
-A browser-based German learning app designed to grow from A1 into later levels.
-The current data set contains the initial A1 lessons.
+GERMAN A1 PRACTICE LAB — VERSION 2
 
 FILES
 - index.html  -> the app
