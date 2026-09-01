@@ -20,6 +20,12 @@
     .tabs button.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
     .panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px}
     .topline{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+    .queue-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .toggle-control{display:flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--card);border-radius:12px;padding:10px 12px;cursor:pointer}
+    .toggle-control input{accent-color:var(--accent)}
+    .learned-btn[aria-pressed="true"]{color:var(--good);border-color:var(--good);background:#f2fbf4}
+    .completion-card{text-align:center;padding:34px 24px}
+    .completion-card h2{margin:0 0 8px}
     .muted{color:var(--muted)} .small{font-size:.9rem}
     .card{border:1px solid var(--border);border-radius:16px;padding:24px;min-height:210px;background:#fbfcff}
     .question{font-size:1.25rem;font-weight:700;line-height:1.45}
@@ -100,8 +106,11 @@
         <div>
           <div id="modeLabel" class="small muted">Flashcards</div>
           <div id="progress" class="small muted"></div>
+          <div id="queueSummary" class="small muted"></div>
         </div>
-        <div class="actions" style="margin:0">
+        <div class="queue-controls">
+          <label class="toggle-control"><input id="includeLearned" type="checkbox"> Include learned</label>
+          <button id="toggleLearnedBtn" class="btn learned-btn" type="button" aria-pressed="false">Mark learned</button>
           <button id="shuffleBtn" class="btn" type="button">Shuffle</button>
           <button id="resetBtn" class="btn" type="button">Reset progress</button>
         </div>
@@ -116,6 +125,12 @@
           <kbd class="search-key" aria-hidden="true">/</kbd>
           <div id="searchResults" class="search-results hidden" role="listbox"></div>
         </div>
+      </div>
+
+      <div id="completionPanel" class="card completion-card hidden">
+        <h2>Active practice complete 🎉</h2>
+        <p id="completionMessage" class="muted">Everything in this section is learned.</p>
+        <button id="reviewLearnedBtn" class="btn primary" type="button">Include learned practices</button>
       </div>
 
       <div id="flashPanel">
@@ -154,7 +169,7 @@
       <div class="stat"><span class="small muted">Correct</span><strong id="correctScore">0</strong></div>
       <div class="stat"><span class="small muted">Attempts</span><strong id="attemptScore">0</strong></div>
       <div class="stat"><span class="small muted">Accuracy</span><strong id="accuracyScore">—</strong></div>
-      <div class="stat"><span class="small muted">Mastered cards</span><strong id="masteredScore">0</strong></div>
+      <div class="stat"><span class="small muted">Learned practices</span><strong id="masteredScore">0</strong></div>
     </section>
 
     <section class="backup" aria-labelledby="backupTitle">
@@ -232,7 +247,7 @@
     const STORAGE_KEY = 'germanPracticeProgressV1';
     const LEGACY_STORAGE_KEY = 'germanA1PracticeProgressV1';
     const CUSTOM_DATA_STORAGE_KEY = 'germanPracticeCustomLessonDataV1';
-    const SCHEMA_VERSION = 1;
+    const SCHEMA_VERSION = 2;
     const people = ['ich','du','er/sie/es','wir','ihr','sie/Sie'];
     const formGroups = [
       {label:'ich', key:'ich'},
@@ -293,6 +308,8 @@
         correct: 0,
         attempts: 0,
         masteredFlashcards: {},
+        learnedItems: {},
+        includeLearned: false,
         itemStats: {},
         positions: {flash:0, verbs:0, grammar:0, sentences:0},
         lastMode: 'flash',
@@ -315,9 +332,18 @@
       }
       if (raw.masteredFlashcards && typeof raw.masteredFlashcards === 'object') {
         Object.entries(raw.masteredFlashcards).forEach(([k,v]) => {
-          if (typeof k === 'string' && v === true) clean.masteredFlashcards[k] = true;
+          if (typeof k === 'string' && v === true) {
+            clean.masteredFlashcards[k] = true;
+            clean.learnedItems[k] = true;
+          }
         });
       }
+      if (raw.learnedItems && typeof raw.learnedItems === 'object') {
+        Object.entries(raw.learnedItems).forEach(([k,v]) => {
+          if (typeof k === 'string' && v === true) clean.learnedItems[k] = true;
+        });
+      }
+      clean.includeLearned = raw.includeLearned === true;
       if (raw.itemStats && typeof raw.itemStats === 'object') {
         Object.entries(raw.itemStats).forEach(([k,v]) => {
           if (!v || typeof v !== 'object') return;
@@ -325,6 +351,7 @@
           clean.itemStats[k] = {
             attempts: a,
             correct: Math.min(a, safeInt(v.correct)),
+            correctStreak: Math.min(3, safeInt(v.correctStreak)),
             lastAt: typeof v.lastAt === 'string' ? v.lastAt : null
           };
         });
@@ -349,7 +376,7 @@
     let index = safeInt(state.positions[mode]);
     let correct = state.correct;
     let attempts = state.attempts;
-    let flashOrder = [...Array(DATA.flashcards.length).keys()];
+    let flashOrder = [];
     let quizOrder = [];
     let correctSubmitReadyForNext = false;
 
@@ -403,21 +430,50 @@
         [arr[i],arr[j]]=[arr[j],arr[i]];
       }
     }
+    function isLearnedKey(key){
+      return Boolean(key && (state.learnedItems[key] || state.masteredFlashcards[key]));
+    }
+    function setLearnedKey(key, learned){
+      if(!key) return;
+      if(learned){
+        state.learnedItems[key]=true;
+        if(key.startsWith('flash:')) state.masteredFlashcards[key]=true;
+      }else{
+        delete state.learnedItems[key];
+        if(key.startsWith('flash:')) delete state.masteredFlashcards[key];
+        if(state.itemStats[key]) state.itemStats[key].correctStreak=0;
+      }
+    }
+    function allPracticeKeys(){
+      const keys=DATA.flashcards.map(flashKey);
+      verbQs.forEach(q=>keys.push(quizKey('verbs',q)));
+      DATA.grammar.forEach(q=>keys.push(quizKey('grammar',q)));
+      DATA.sentences.forEach(q=>keys.push(quizKey('sentences',q)));
+      return [...new Set(keys)];
+    }
     function masteredCount(){
-      return DATA.flashcards.reduce((n, card) => n + (state.masteredFlashcards[flashKey(card)] ? 1 : 0), 0);
+      return allPracticeKeys().reduce((n,key)=>n+(isLearnedKey(key)?1:0),0);
     }
     function scoreUpdate(){
       $('#correctScore').textContent=correct;
       $('#attemptScore').textContent=attempts;
       $('#accuracyScore').textContent=attempts ? Math.round(correct/attempts*100)+'%' : '—';
-      $('#masteredScore').textContent=masteredCount() + '/' + DATA.flashcards.length;
+      $('#masteredScore').textContent=masteredCount() + '/' + allPracticeKeys().length;
     }
     function recordItem(key, wasCorrect){
-      const stat = state.itemStats[key] || {attempts:0, correct:0, lastAt:null};
+      const stat = state.itemStats[key] || {attempts:0, correct:0, correctStreak:0, lastAt:null};
       stat.attempts += 1;
-      if (wasCorrect) stat.correct += 1;
+      if(wasCorrect){
+        stat.correct += 1;
+        stat.correctStreak = Math.min(3,(stat.correctStreak||0)+1);
+        if(stat.correctStreak>=3) setLearnedKey(key,true);
+      }else{
+        stat.correctStreak = 0;
+        setLearnedKey(key,false);
+      }
       stat.lastAt = new Date().toISOString();
       state.itemStats[key] = stat;
+      return stat;
     }
 
     function presentGroupAnswer(verb, group){
@@ -457,30 +513,99 @@
       if(mode==='grammar') return DATA.grammar;
       return DATA.sentences;
     }
-    function moveBy(delta){
-      const listLength = mode === 'flash' ? flashOrder.length : currentList().length;
-      if (!listLength) return;
-      index = (index + delta + listLength) % listLength;
-      if (mode === 'flash') {
-        showFlash();
-      } else {
-        if (!quizOrder.length || quizOrder.length !== currentList().length) makeQuizOrder();
-        showQuiz();
+    function currentPracticeKey(){
+      if(mode==='flash'){
+        const card=DATA.flashcards[flashOrder[index]];
+        return card ? flashKey(card) : null;
       }
+      const q=currentList()[quizOrder[index]];
+      return q ? currentItemKey(q) : null;
+    }
+    function modeLearnedCount(){
+      if(mode==='flash') return DATA.flashcards.reduce((n,card)=>n+(isLearnedKey(flashKey(card))?1:0),0);
+      return currentList().reduce((n,q)=>n+(isLearnedKey(quizKey(mode,q))?1:0),0);
+    }
+    function updateQueueUi(){
+      const total=mode==='flash' ? DATA.flashcards.length : currentList().length;
+      const learned=modeLearnedCount();
+      const shown=mode==='flash' ? flashOrder.length : quizOrder.length;
+      $('#queueSummary').textContent=state.includeLearned ?
+        shown+' shown · '+learned+' learned' :
+        shown+' active · '+learned+' learned';
+      const key=currentPracticeKey();
+      const learnedCurrent=isLearnedKey(key);
+      $('#toggleLearnedBtn').disabled=!key;
+      $('#toggleLearnedBtn').textContent=learnedCurrent ? 'Mark as learning' : 'Mark learned';
+      $('#toggleLearnedBtn').setAttribute('aria-pressed',learnedCurrent?'true':'false');
+      $('#includeLearned').checked=state.includeLearned;
+    }
+    function buildFlashOrder(){
+      return [...Array(DATA.flashcards.length).keys()]
+        .filter(i=>state.includeLearned || !isLearnedKey(flashKey(DATA.flashcards[i])));
+    }
+    function makeQuizOrder(){
+      quizOrder=[...Array(currentList().length).keys()]
+        .filter(i=>state.includeLearned || !isLearnedKey(quizKey(mode,currentList()[i])));
+    }
+    function showCompletion(){
+      $('#completionPanel').classList.remove('hidden');
+      $('#flashPanel').classList.add('hidden');
+      $('#quizPanel').classList.add('hidden');
+      $('#progress').textContent='0 / 0';
+      $('#completionMessage').textContent=state.includeLearned ?
+        'There are no practices in this section.' :
+        'Everything in this section is learned. Include learned practices whenever you want to review.';
+      updateQueueUi();
+      saveState();
+    }
+    function hideCompletion(){
+      $('#completionPanel').classList.add('hidden');
+      if(mode==='flash'){
+        $('#flashPanel').classList.remove('hidden');
+        $('#quizPanel').classList.add('hidden');
+      }else{
+        $('#flashPanel').classList.add('hidden');
+        $('#quizPanel').classList.remove('hidden');
+      }
+    }
+    function advancePastLearnedCurrent(){
+      const oldOrder=mode==='flash' ? [...flashOrder] : [...quizOrder];
+      const oldPosition=index;
+      if(mode==='flash') flashOrder=buildFlashOrder();
+      else makeQuizOrder();
+      const nextOrder=mode==='flash' ? flashOrder : quizOrder;
+      if(!nextOrder.length){ showCompletion(); return; }
+      let nextRaw=null;
+      for(let step=1;step<=oldOrder.length;step++){
+        const candidate=oldOrder[(oldPosition+step)%oldOrder.length];
+        if(nextOrder.includes(candidate)){ nextRaw=candidate; break; }
+      }
+      index=nextRaw==null ? Math.min(oldPosition,nextOrder.length-1) : nextOrder.indexOf(nextRaw);
+      if(mode==='flash') showFlash(); else showQuiz();
+    }
+    function moveBy(delta){
+      const order=mode==='flash' ? flashOrder : quizOrder;
+      if(!order.length){ showCompletion(); return; }
+      index=(index+delta+order.length)%order.length;
+      if(mode==='flash') showFlash(); else showQuiz();
     }
     function hideFlashAnswer(){
       $('#flashAnswer').classList.add('hidden');
       $('#toggleFlashAnswer').textContent='Show answer';
     }
     function showFlash(){
-      if(!DATA.flashcards.length) return;
-      index = Math.max(0, Math.min(index, flashOrder.length-1));
+      if(!flashOrder.length){ showCompletion(); return; }
+      hideCompletion();
+      index=Math.max(0,Math.min(index,flashOrder.length-1));
       const c=DATA.flashcards[flashOrder[index]];
+      const key=flashKey(c);
       $('#flashQuestion').textContent=c.front;
       $('#flashAnswer').textContent=c.back;
       hideFlashAnswer();
-      $('#knowFlash').textContent = state.masteredFlashcards[flashKey(c)] ? 'Mastered ✓' : 'I know this ✓';
+      const streak=(state.itemStats[key]&&state.itemStats[key].correctStreak)||0;
+      $('#knowFlash').textContent=isLearnedKey(key) ? 'Learned ✓' : 'I know this ('+streak+'/3)';
       $('#progress').textContent=(index+1)+' / '+flashOrder.length;
+      updateQueueUi();
       saveState();
     }
     function toggleFlashAnswer(){
@@ -488,7 +613,6 @@
       const hidden=box.classList.toggle('hidden');
       $('#toggleFlashAnswer').textContent=hidden?'Show answer':'Hide answer';
     }
-    function makeQuizOrder(){ quizOrder=[...Array(currentList().length).keys()]; }
     function hideQuizAnswer(){
       $('#answerReveal').classList.add('hidden');
       $('#toggleQuizAnswer').textContent='Show answer';
@@ -512,11 +636,11 @@
       });
     }
     function showQuiz(){
-      correctSubmitReadyForNext = false;
+      correctSubmitReadyForNext=false;
       const list=currentList();
-      if(!list.length) return;
-      if(!quizOrder.length || quizOrder.length!==list.length) makeQuizOrder();
-      index = Math.max(0, Math.min(index, quizOrder.length-1));
+      if(!quizOrder.length){ showCompletion(); return; }
+      hideCompletion();
+      index=Math.max(0,Math.min(index,quizOrder.length-1));
       const q=list[quizOrder[index]];
       $('#quizTag').textContent=q.type || '';
       $('#quizQuestion').textContent=q.question || '';
@@ -530,6 +654,7 @@
       else $('#verbAnswerGrid').textContent='';
       hideQuizAnswer();
       $('#progress').textContent=(index+1)+' / '+quizOrder.length;
+      updateQueueUi();
       saveState();
       const firstInput=isVerbCard ? $('#verbAnswerGrid').querySelector('input') : $('#quizInput');
       if(firstInput) firstInput.focus();
@@ -573,12 +698,9 @@
       const labels={flash:'Flashcards',verbs:'Verb conjugation',grammar:'Grammar',sentences:'Sentence practice'};
       $('#modeLabel').textContent=labels[mode];
       if(mode==='flash'){
-        $('#flashPanel').classList.remove('hidden');
-        $('#quizPanel').classList.add('hidden');
+        flashOrder=buildFlashOrder();
         showFlash();
       }else{
-        $('#flashPanel').classList.add('hidden');
-        $('#quizPanel').classList.remove('hidden');
         makeQuizOrder();
         showQuiz();
       }
@@ -625,6 +747,7 @@
           try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
           catch (err) { storageWorks = false; }
 
+          $('#includeLearned').checked=state.includeLearned;
           scoreUpdate();
           switchMode(mode);
           setStatus(
@@ -662,7 +785,8 @@
         detail:verb.meaning||'Open conjugation practice',
         searchText:[verb.verb,verb.meaning,...Object.values(verb.present||{}),verb.perfekt||''].join(' '),
         mode:'verbs',
-        dataIndex
+        dataIndex,
+        key:quizKey('verbs',verbQs[dataIndex])
       }));
       const wordItems=DATA.flashcards.map((card,dataIndex)=>({
         kind:'Word',
@@ -670,7 +794,8 @@
         detail:String(card.back||'Open flashcard'),
         searchText:[card.front||'',card.back||''].join(' '),
         mode:'flash',
-        dataIndex
+        dataIndex,
+        key:flashKey(card)
       }));
       searchItems=[...verbItems,...wordItems];
     }
@@ -697,6 +822,10 @@
     function jumpToSearchItem(item){
       $('#practiceSearch').value=item.title;
       closeSearchResults();
+      if(isLearnedKey(item.key) && !state.includeLearned){
+        state.includeLearned=true;
+        $('#includeLearned').checked=true;
+      }
       switchMode(item.mode);
       if(item.mode==='verbs'){
         index=Math.max(0,Math.min(item.dataIndex,verbQs.length-1));
@@ -745,7 +874,7 @@
           detail.textContent=item.detail;
           const kind=document.createElement('span');
           kind.className='result-kind';
-          kind.textContent=item.kind;
+          kind.textContent=isLearnedKey(item.key) ? 'Learned ✓' : item.kind;
           main.append(title,detail);
           button.append(main,kind);
           button.addEventListener('mousedown',event=>event.preventDefault());
@@ -791,7 +920,7 @@
       });
     }
     function rebuildLessonViews(){
-      flashOrder=[...Array(DATA.flashcards.length).keys()];
+      flashOrder=[];
       quizOrder=[];
       verbQs=buildVerbQuestions();
       index=0;
@@ -872,32 +1001,32 @@
 
     $('#againFlash').addEventListener('click',()=>{
       const c=DATA.flashcards[flashOrder[index]];
+      if(!c) return;
       attempts++;
-      recordItem(flashKey(c), false);
-      delete state.masteredFlashcards[flashKey(c)];
+      recordItem(flashKey(c),false);
       scoreUpdate();
       saveState();
-      index=(index+1)%flashOrder.length;
-      showFlash();
+      moveBy(1);
     });
 
     $('#knowFlash').addEventListener('click',()=>{
       const c=DATA.flashcards[flashOrder[index]];
+      if(!c) return;
       const key=flashKey(c);
       correct++;
       attempts++;
-      state.masteredFlashcards[key]=true;
-      recordItem(key, true);
+      recordItem(key,true);
       scoreUpdate();
       saveState();
-      index=(index+1)%flashOrder.length;
-      showFlash();
+      if(isLearnedKey(key) && !state.includeLearned) advancePastLearnedCurrent();
+      else moveBy(1);
     });
 
     $('#quizPanel').addEventListener('submit',e=>{
       e.preventDefault();
-      if (correctSubmitReadyForNext) {
-        moveBy(1);
+      if(correctSubmitReadyForNext){
+        if(isLearnedKey(currentPracticeKey()) && !state.includeLearned) advancePastLearnedCurrent();
+        else moveBy(1);
         return;
       }
       const q=currentList()[quizOrder[index]];
@@ -921,12 +1050,16 @@
         isCorrect=given===normalize(q.answer);
       }
       attempts++;
-      recordItem(currentItemKey(q), isCorrect);
+      const key=currentItemKey(q);
+      const stat=recordItem(key,isCorrect);
       if(isCorrect){
         correct++;
-        correctSubmitReadyForNext = true;
+        correctSubmitReadyForNext=true;
+        const masteryMessage=isLearnedKey(key) ?
+          'Learned ✓ This practice will leave the active queue when you continue.' :
+          stat.correctStreak+'/3 correct answers toward learned.';
         $('#feedback').innerHTML='✅ <strong>Correct.</strong> '+(q.explanation||'')+
-          '<br><span class="muted">Press Enter again for the next question.</span>';
+          '<br><span class="muted">'+masteryMessage+' Press Enter again for the next question.</span>';
       }else{
         correctSubmitReadyForNext = false;
         $('#feedback').innerHTML=mode==='verbs' ?
@@ -938,15 +1071,49 @@
     });
 
     $('#toggleQuizAnswer').addEventListener('click',toggleQuizAnswer);
-    $('#nextBtn').addEventListener('click',()=>moveBy(1));
+    $('#nextBtn').addEventListener('click',()=>{
+      if(isLearnedKey(currentPracticeKey()) && !state.includeLearned) advancePastLearnedCurrent();
+      else moveBy(1);
+    });
+    $('#toggleLearnedBtn').addEventListener('click',()=>{
+      const key=currentPracticeKey();
+      if(!key) return;
+      const makeLearned=!isLearnedKey(key);
+      setLearnedKey(key,makeLearned);
+      scoreUpdate();
+      saveState(true);
+      if(makeLearned && !state.includeLearned) advancePastLearnedCurrent();
+      else updateQueueUi();
+    });
+    $('#includeLearned').addEventListener('change',e=>{
+      const currentKey=currentPracticeKey();
+      state.includeLearned=e.target.checked;
+      if(mode==='flash') flashOrder=buildFlashOrder(); else makeQuizOrder();
+      const order=mode==='flash'?flashOrder:quizOrder;
+      const list=mode==='flash'?DATA.flashcards:currentList();
+      const position=order.findIndex(rawIndex=>{
+        const key=mode==='flash'?flashKey(list[rawIndex]):quizKey(mode,list[rawIndex]);
+        return key===currentKey;
+      });
+      index=position>=0?position:0;
+      saveState();
+      if(mode==='flash') showFlash(); else showQuiz();
+    });
+    $('#reviewLearnedBtn').addEventListener('click',()=>{
+      state.includeLearned=true;
+      $('#includeLearned').checked=true;
+      if(mode==='flash') flashOrder=buildFlashOrder(); else makeQuizOrder();
+      index=0;
+      if(mode==='flash') showFlash(); else showQuiz();
+    });
     $('#shuffleBtn').addEventListener('click',()=>{
       index=0;
-      if(mode==='flash'){ shuffle(flashOrder); showFlash(); }
+      if(mode==='flash'){ flashOrder=buildFlashOrder(); shuffle(flashOrder); showFlash(); }
       else { makeQuizOrder(); shuffle(quizOrder); showQuiz(); }
     });
 
     $('#resetBtn').addEventListener('click',()=>{
-      if (!confirm('Reset all saved scores, mastered cards, and practice history in this browser?')) return;
+      if (!confirm('Reset all saved scores, learned practices, and practice history in this browser?')) return;
       state=blankState();
       correct=0;
       attempts=0;
@@ -956,6 +1123,7 @@
         try { localStorage.removeItem(STORAGE_KEY); }
         catch (err) { storageWorks=false; }
       }
+      $('#includeLearned').checked=false;
       scoreUpdate();
       switchMode('flash');
       saveState(true);
@@ -1027,6 +1195,7 @@
 
     rebuildSearchIndex();
     renderVerbTable();
+    $('#includeLearned').checked=state.includeLearned;
     scoreUpdate();
     switchMode(mode);
     if (storageWorks) {
