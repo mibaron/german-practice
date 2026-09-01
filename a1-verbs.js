@@ -2,6 +2,13 @@
   'use strict';
 
   const PEOPLE = ['ich', 'du', 'er/sie/es', 'wir', 'ihr', 'sie/Sie'];
+  const PRACTICE_GROUPS = [
+    {label: 'ich', key: 'ich'},
+    {label: 'du', key: 'du'},
+    {label: 'er/sie/es', key: 'er/sie/es'},
+    {label: 'wir / sie / Sie', key: 'wir'},
+    {label: 'ihr', key: 'ihr'}
+  ];
   const REFLEXIVE = {
     ich: 'mich', du: 'dich', 'er/sie/es': 'sich',
     wir: 'uns', ihr: 'euch', 'sie/Sie': 'sich'
@@ -241,11 +248,11 @@
   }));
 
   const sentenceExercises = verbs.map((item, index) => {
-    const person = PEOPLE[index % PEOPLE.length];
+    const group = PRACTICE_GROUPS[index % PRACTICE_GROUPS.length];
     return {
       type: `A1 verb: ${item.verb}`,
-      question: `Conjugate in Präsens: ${person} → ? (${item.verb})`,
-      answer: item.present[person],
+      question: `Conjugate in Präsens: ${group.label} → ? (${item.verb})`,
+      answer: item.present[group.key],
       explanation: `${item.verb} means “${item.meaning}”. Perfekt: ${item.perfekt}`,
       level: 'A1',
       pack: 'goethe-a1-verbs'
