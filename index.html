@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>German Practice</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;--card:#fff;--text:#20242c;--muted:#6b7280;--border:#dfe3ea;
+      --accent:#3157d5;--accent-soft:#e9eeff;--good:#137333;--bad:#b3261e
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+    button,input{font:inherit} button{cursor:pointer}
+    .wrap{max-width:980px;margin:auto;padding:24px}
+    .header{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+    h1{margin:0 0 6px;font-size:clamp(1.6rem,4vw,2.2rem)} .sub{color:var(--muted);margin:0}
+    .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+    .tabs button,.btn{border:1px solid var(--border);background:var(--card);border-radius:12px;padding:12px 14px}
+    .tabs button.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px}
+    .topline{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+    .muted{color:var(--muted)} .small{font-size:.9rem}
+    .card{border:1px solid var(--border);border-radius:16px;padding:24px;min-height:210px;background:#fbfcff}
+    .question{font-size:1.25rem;font-weight:700;line-height:1.45}
+    .answer{border-top:1px solid var(--border);margin-top:18px;padding-top:18px;line-height:1.55}
+    .hidden{display:none!important}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .primary{background:var(--accent)!important;color:#fff;border-color:var(--accent)!important}
+    .input{width:100%;padding:13px 14px;border:1px solid var(--border);border-radius:12px;margin-top:8px;outline:none;background:#fff}
+    .input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+    .feedback{margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:44px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+    .stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+    .stat strong{display:block;font-size:1.6rem;margin-top:4px}
+    details{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+    summary{font-weight:700;cursor:pointer}.tablewrap{overflow:auto;margin-top:12px}
+    table{border-collapse:collapse;width:100%;min-width:760px;font-size:.9rem} th,td{border-bottom:1px solid var(--border);padding:9px;text-align:left} th{background:#fafafa}
+    .error{color:var(--bad);background:#fff4f2;border:1px solid #ffd2cc;border-radius:12px;padding:14px}
+    .backup{margin-top:14px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+    .backup-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    .status{margin-top:10px;font-size:.9rem;color:var(--muted)}
+    .status.good{color:var(--good)} .status.bad{color:var(--bad)}
+    @media(max-width:650px){.wrap{padding:14px}.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr}.panel{padding:15px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="header">
+      <div>
+        <h1>German Practice</h1>
+        <p class="sub">Flashcards, verb conjugation, grammar and sentence practice across levels.</p>
+      </div>
+      <div class="small muted">Data source: <strong>data.js</strong></div>
+    </div>
+
+    <div id="loadError" class="error hidden">
+      The lesson data could not be loaded. Keep <strong>data.js</strong> in the same folder as <strong>index.html</strong>.
+    </div>
+
+    <section class="tabs" aria-label="Practice mode">
+      <button data-mode="flash" class="active">🃏 Flashcards</button>
+      <button data-mode="verbs">🔤 Verb Quiz</button>
+      <button data-mode="grammar">🧠 Grammar</button>
+      <button data-mode="sentences">✍️ Sentences</button>
+    </section>
+
+    <section class="panel">
+      <div class="topline">
+        <div>
+          <div id="modeLabel" class="small muted">Flashcards</div>
+          <div id="progress" class="small muted"></div>
+        </div>
+        <div class="actions" style="margin:0">
+          <button id="shuffleBtn" class="btn" type="button">Shuffle</button>
+          <button id="resetBtn" class="btn" type="button">Reset progress</button>
+        </div>
+      </div>
+
+      <div id="flashPanel">
+        <div class="card">
+          <div class="small muted">FLASHCARD</div>
+          <div id="flashQuestion" class="question" style="margin-top:10px"></div>
+          <div id="flashAnswer" class="answer hidden"></div>
+        </div>
+        <div class="actions">
+          <button id="prevFlash" class="btn" type="button">← Previous</button>
+          <button id="toggleFlashAnswer" class="btn" type="button">Show answer</button>
+          <button id="againFlash" class="btn" type="button">Again</button>
+          <button id="knowFlash" class="btn primary" type="button">I know this ✓</button>
+        </div>
+      </div>
+
+      <form id="quizPanel" class="hidden">
+        <div id="quizTag" class="small muted"></div>
+        <div id="quizQuestion" class="question" style="margin-top:8px"></div>
+        <div id="quizHint" class="small muted" style="margin-top:8px"></div>
+        <label style="display:block;margin-top:18px;font-weight:600">Your answer
+          <input id="quizInput" class="input" autocomplete="off" placeholder="Type in German…">
+        </label>
+        <div class="actions">
+          <button class="btn primary" type="submit">Check</button>
+          <button id="toggleQuizAnswer" class="btn" type="button">Show answer</button>
+          <button id="nextBtn" class="btn" type="button">Next →</button>
+        </div>
+        <div id="answerReveal" class="feedback hidden"></div>
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><span class="small muted">Correct</span><strong id="correctScore">0</strong></div>
+      <div class="stat"><span class="small muted">Attempts</span><strong id="attemptScore">0</strong></div>
+      <div class="stat"><span class="small muted">Accuracy</span><strong id="accuracyScore">—</strong></div>
+      <div class="stat"><span class="small muted">Mastered cards</span><strong id="masteredScore">0</strong></div>
+    </section>
+
+    <section class="backup" aria-labelledby="backupTitle">
+      <div class="backup-head">
+        <div>
+          <strong id="backupTitle">Progress backup</strong>
+          <div class="small muted">Progress is saved automatically in this browser.</div>
+        </div>
+        <div class="actions" style="margin:0">
+          <button id="exportBtn" class="btn" type="button">Export progress</button>
+          <button id="importBtn" class="btn" type="button">Import progress</button>
+          <input id="importFile" class="hidden" type="file" accept=".json,application/json">
+        </div>
+      </div>
+      <div id="storageStatus" class="status" aria-live="polite">Checking browser storage…</div>
+    </section>
+
+    <details>
+      <summary>Verb reference table</summary>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Verb</th><th>Meaning</th><th>ich</th><th>du</th><th>er/sie/es</th><th>wir</th><th>ihr</th><th>sie/Sie</th><th>Perfekt</th></tr></thead>
+          <tbody id="verbTableBody"></tbody>
+        </table>
+      </div>
+    </details>
+  </main>
+
+  <script src="data.js"></script>
+  <script>
+  (() => {
+    const DATA = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
+    if (!DATA) {
+      document.getElementById('loadError').classList.remove('hidden');
+      return;
+    }
+
+    const STORAGE_KEY = 'germanPracticeProgressV1';
+    const LEGACY_STORAGE_KEY = 'germanA1PracticeProgressV1';
+    const SCHEMA_VERSION = 1;
+    const people = ['ich','du','er/sie/es','wir','ihr','sie/Sie'];
+    const modes = ['flash','verbs','grammar','sentences'];
+    const $ = s => document.querySelector(s);
+
+    function blankState(){
+      return {
+        schemaVersion: SCHEMA_VERSION,
+        correct: 0,
+        attempts: 0,
+        masteredFlashcards: {},
+        itemStats: {},
+        positions: {flash:0, verbs:0, grammar:0, sentences:0},
+        lastMode: 'flash',
+        savedAt: null
+      };
+    }
+    function safeInt(value, fallback=0){
+      const n = Number(value);
+      return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
+    }
+    function sanitizeState(raw){
+      const clean = blankState();
+      if (!raw || typeof raw !== 'object') return clean;
+      clean.correct = safeInt(raw.correct);
+      clean.attempts = Math.max(clean.correct, safeInt(raw.attempts));
+      clean.lastMode = modes.includes(raw.lastMode) ? raw.lastMode : 'flash';
+
+      if (raw.positions && typeof raw.positions === 'object') {
+        modes.forEach(m => clean.positions[m] = safeInt(raw.positions[m]));
+      }
+      if (raw.masteredFlashcards && typeof raw.masteredFlashcards === 'object') {
+        Object.entries(raw.masteredFlashcards).forEach(([k,v]) => {
+          if (typeof k === 'string' && v === true) clean.masteredFlashcards[k] = true;
+        });
+      }
+      if (raw.itemStats && typeof raw.itemStats === 'object') {
+        Object.entries(raw.itemStats).forEach(([k,v]) => {
+          if (!v || typeof v !== 'object') return;
+          const a = safeInt(v.attempts);
+          clean.itemStats[k] = {
+            attempts: a,
+            correct: Math.min(a, safeInt(v.correct)),
+            lastAt: typeof v.lastAt === 'string' ? v.lastAt : null
+          };
+        });
+      }
+      clean.savedAt = typeof raw.savedAt === 'string' ? raw.savedAt : null;
+      return clean;
+    }
+
+    let storageWorks = true;
+    function loadState(){
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+        return raw ? sanitizeState(JSON.parse(raw)) : blankState();
+      } catch (err) {
+        storageWorks = false;
+        return blankState();
+      }
+    }
+
+    let state = loadState();
+    let mode = state.lastMode;
+    let index = safeInt(state.positions[mode]);
+    let correct = state.correct;
+    let attempts = state.attempts;
+    let flashOrder = [...Array(DATA.flashcards.length).keys()];
+    let quizOrder = [];
+
+    function hashText(text){
+      let h = 2166136261;
+      for (let i=0;i<text.length;i++) {
+        h ^= text.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return (h >>> 0).toString(36);
+    }
+    function flashKey(card){
+      return 'flash:' + hashText((card.front||'') + '|' + (card.back||''));
+    }
+    function quizKey(kind, q){
+      return kind + ':' + hashText((q.type||'') + '|' + (q.question||'') + '|' + (q.answer||''));
+    }
+    function currentItemKey(q){ return quizKey(mode, q); }
+
+    function setStatus(message, kind=''){
+      const el = $('#storageStatus');
+      el.textContent = message;
+      el.className = 'status' + (kind ? ' ' + kind : '');
+    }
+    function saveState(showMessage=false){
+      state.correct = correct;
+      state.attempts = attempts;
+      state.lastMode = mode;
+      state.positions[mode] = index;
+      state.savedAt = new Date().toISOString();
+
+      if (!storageWorks) {
+        if (showMessage) setStatus('Browser storage is unavailable here. Export still works for manual backups.', 'bad');
+        return;
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (showMessage) setStatus('Progress saved in this browser.', 'good');
+      } catch (err) {
+        storageWorks = false;
+        setStatus('Browser storage became unavailable. Export your progress to keep a backup.', 'bad');
+      }
+    }
+
+    function normalize(s){
+      return String(s).toLowerCase().trim().replace(/[.!?]/g,'').replace(/\s+/g,' ');
+    }
+    function shuffle(arr){
+      for(let i=arr.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+      }
+    }
+    function masteredCount(){
+      return DATA.flashcards.reduce((n, card) => n + (state.masteredFlashcards[flashKey(card)] ? 1 : 0), 0);
+    }
+    function scoreUpdate(){
+      $('#correctScore').textContent=correct;
+      $('#attemptScore').textContent=attempts;
+      $('#accuracyScore').textContent=attempts ? Math.round(correct/attempts*100)+'%' : '—';
+      $('#masteredScore').textContent=masteredCount() + '/' + DATA.flashcards.length;
+    }
+    function recordItem(key, wasCorrect){
+      const stat = state.itemStats[key] || {attempts:0, correct:0, lastAt:null};
+      stat.attempts += 1;
+      if (wasCorrect) stat.correct += 1;
+      stat.lastAt = new Date().toISOString();
+      state.itemStats[key] = stat;
+    }
+
+    function buildVerbQuestions(){
+      const out=[];
+      DATA.verbs.forEach(v=>{
+        people.forEach(p=>{
+          out.push({type:'Conjugate '+v.verb, question:p+' → ?', answer:v.present[p], explanation:'Präsens'});
+        });
+        out.push({type:'Perfekt of '+v.verb, question:v.verb+' → ?', answer:v.perfekt, explanation:'Perfekt'});
+      });
+      return out;
+    }
+    const verbQs=buildVerbQuestions();
+
+    function currentList(){
+      if(mode==='verbs') return verbQs;
+      if(mode==='grammar') return DATA.grammar;
+      return DATA.sentences;
+    }
+    function hideFlashAnswer(){
+      $('#flashAnswer').classList.add('hidden');
+      $('#toggleFlashAnswer').textContent='Show answer';
+    }
+    function showFlash(){
+      if(!DATA.flashcards.length) return;
+      index = Math.max(0, Math.min(index, flashOrder.length-1));
+      const c=DATA.flashcards[flashOrder[index]];
+      $('#flashQuestion').textContent=c.front;
+      $('#flashAnswer').textContent=c.back;
+      hideFlashAnswer();
+      $('#knowFlash').textContent = state.masteredFlashcards[flashKey(c)] ? 'Mastered ✓' : 'I know this ✓';
+      $('#progress').textContent=(index+1)+' / '+flashOrder.length;
+      saveState();
+    }
+    function toggleFlashAnswer(){
+      const box=$('#flashAnswer');
+      const hidden=box.classList.toggle('hidden');
+      $('#toggleFlashAnswer').textContent=hidden?'Show answer':'Hide answer';
+    }
+    function makeQuizOrder(){ quizOrder=[...Array(currentList().length).keys()]; }
+    function hideQuizAnswer(){
+      $('#answerReveal').classList.add('hidden');
+      $('#toggleQuizAnswer').textContent='Show answer';
+    }
+    function showQuiz(){
+      const list=currentList();
+      if(!list.length) return;
+      if(!quizOrder.length || quizOrder.length!==list.length) makeQuizOrder();
+      index = Math.max(0, Math.min(index, quizOrder.length-1));
+      const q=list[quizOrder[index]];
+      $('#quizTag').textContent=q.type || '';
+      $('#quizQuestion').textContent=q.question || '';
+      $('#quizHint').textContent=mode==='verbs' ? (q.explanation||'') : '';
+      $('#quizInput').value='';
+      $('#feedback').textContent='';
+      hideQuizAnswer();
+      $('#progress').textContent=(index+1)+' / '+quizOrder.length;
+      saveState();
+      $('#quizInput').focus();
+    }
+    function toggleQuizAnswer(){
+      const q=currentList()[quizOrder[index]];
+      const box=$('#answerReveal');
+      if(box.classList.contains('hidden')){
+        box.innerHTML='<strong>Answer:</strong> '+q.answer+(q.explanation?'<br><span class="muted">'+q.explanation+'</span>':'');
+        box.classList.remove('hidden');
+        $('#toggleQuizAnswer').textContent='Hide answer';
+      }else{
+        box.classList.add('hidden');
+        $('#toggleQuizAnswer').textContent='Show answer';
+      }
+    }
+    function switchMode(next){
+      if (!modes.includes(next)) next='flash';
+      state.positions[mode] = index;
+      mode=next;
+      index=safeInt(state.positions[mode]);
+      document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+      const labels={flash:'Flashcards',verbs:'Verb conjugation',grammar:'Grammar',sentences:'Sentence practice'};
+      $('#modeLabel').textContent=labels[mode];
+      if(mode==='flash'){
+        $('#flashPanel').classList.remove('hidden');
+        $('#quizPanel').classList.add('hidden');
+        showFlash();
+      }else{
+        $('#flashPanel').classList.add('hidden');
+        $('#quizPanel').classList.remove('hidden');
+        makeQuizOrder();
+        showQuiz();
+      }
+    }
+
+    function exportProgress(){
+      saveState();
+      const payload = {
+        app: 'German Practice',
+        schemaVersion: SCHEMA_VERSION,
+        exportedAt: new Date().toISOString(),
+        lessonDataVersion: DATA.meta && DATA.meta.version ? DATA.meta.version : null,
+        progress: state
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'german-practice-progress-' + new Date().toISOString().slice(0,10) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 1000);
+      setStatus('Progress exported. Keep the JSON file as your backup.', 'good');
+    }
+
+    function importProgressFile(file){
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const raw = JSON.parse(String(reader.result || ''));
+          const compatibleApps = ['German Practice', 'German A1 Practice Lab'];
+          if (raw.app && !compatibleApps.includes(raw.app)) {
+            throw new Error('This does not look like a German Practice backup.');
+          }
+          state = sanitizeState(raw.progress || raw);
+          correct = state.correct;
+          attempts = state.attempts;
+          mode = modes.includes(state.lastMode) ? state.lastMode : 'flash';
+          index = safeInt(state.positions[mode]);
+
+          storageWorks = true;
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+          catch (err) { storageWorks = false; }
+
+          scoreUpdate();
+          switchMode(mode);
+          setStatus(
+            storageWorks ? 'Progress imported and saved in this browser.' :
+            'Progress imported for this session. Browser storage is unavailable, so export it again before closing.',
+            storageWorks ? 'good' : 'bad'
+          );
+        } catch (err) {
+          setStatus('Import failed: ' + (err.message || 'invalid backup file'), 'bad');
+        } finally {
+          $('#importFile').value='';
+        }
+      };
+      reader.onerror = () => {
+        setStatus('Import failed: the file could not be read.', 'bad');
+        $('#importFile').value='';
+      };
+      reader.readAsText(file);
+    }
+
+    document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>switchMode(b.dataset.mode)));
+    $('#toggleFlashAnswer').addEventListener('click',toggleFlashAnswer);
+    $('#prevFlash').addEventListener('click',()=>{ index=(index-1+flashOrder.length)%flashOrder.length; showFlash(); });
+
+    $('#againFlash').addEventListener('click',()=>{
+      const c=DATA.flashcards[flashOrder[index]];
+      attempts++;
+      recordItem(flashKey(c), false);
+      delete state.masteredFlashcards[flashKey(c)];
+      scoreUpdate();
+      saveState();
+      index=(index+1)%flashOrder.length;
+      showFlash();
+    });
+
+    $('#knowFlash').addEventListener('click',()=>{
+      const c=DATA.flashcards[flashOrder[index]];
+      const key=flashKey(c);
+      correct++;
+      attempts++;
+      state.masteredFlashcards[key]=true;
+      recordItem(key, true);
+      scoreUpdate();
+      saveState();
+      index=(index+1)%flashOrder.length;
+      showFlash();
+    });
+
+    $('#quizPanel').addEventListener('submit',e=>{
+      e.preventDefault();
+      const q=currentList()[quizOrder[index]];
+      const given=normalize($('#quizInput').value);
+      const ans=normalize(q.answer);
+      if(!given){ $('#feedback').textContent='Type an answer first.'; return; }
+      attempts++;
+      const isCorrect = given===ans;
+      recordItem(currentItemKey(q), isCorrect);
+      if(isCorrect){
+        correct++;
+        $('#feedback').innerHTML='✅ <strong>Correct.</strong> '+(q.explanation||'');
+      }else{
+        $('#feedback').innerHTML='❌ Not quite. Try again, or use “Show answer”.';
+      }
+      scoreUpdate();
+      saveState(true);
+    });
+
+    $('#toggleQuizAnswer').addEventListener('click',toggleQuizAnswer);
+    $('#nextBtn').addEventListener('click',()=>{ index=(index+1)%quizOrder.length; showQuiz(); });
+    $('#shuffleBtn').addEventListener('click',()=>{
+      index=0;
+      if(mode==='flash'){ shuffle(flashOrder); showFlash(); }
+      else { makeQuizOrder(); shuffle(quizOrder); showQuiz(); }
+    });
+
+    $('#resetBtn').addEventListener('click',()=>{
+      if (!confirm('Reset all saved scores, mastered cards, and practice history in this browser?')) return;
+      state=blankState();
+      correct=0;
+      attempts=0;
+      mode='flash';
+      index=0;
+      if (storageWorks) {
+        try { localStorage.removeItem(STORAGE_KEY); }
+        catch (err) { storageWorks=false; }
+      }
+      scoreUpdate();
+      switchMode('flash');
+      saveState(true);
+    });
+
+    $('#exportBtn').addEventListener('click',exportProgress);
+    $('#importBtn').addEventListener('click',()=>$('#importFile').click());
+    $('#importFile').addEventListener('change',e=>importProgressFile(e.target.files && e.target.files[0]));
+
+    const tbody=$('#verbTableBody');
+    DATA.verbs.forEach(v=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td><strong>'+v.verb+'</strong></td><td>'+v.meaning+'</td>'+
+        people.map(p=>'<td>'+v.present[p]+'</td>').join('')+
+        '<td>'+v.perfekt+'</td>';
+      tbody.appendChild(tr);
+    });
+
+    scoreUpdate();
+    switchMode(mode);
+    if (storageWorks) {
+      setStatus(state.savedAt ? 'Saved progress loaded from this browser.' : 'Progress will be saved automatically in this browser.', 'good');
+    } else {
+      setStatus('Browser storage is unavailable here. You can still practice and use Export/Import manually.', 'bad');
+    }
+  })();
+  </script>
+
+</body>
+</html>
