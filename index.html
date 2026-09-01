@@ -184,7 +184,7 @@
       {label:'ich', key:'ich'},
       {label:'du', key:'du'},
       {label:'er/sie/es', key:'er/sie/es'},
-      {label:'wir / sie / Sie', key:'wir'},
+      {label:'wir / sie / Sie', keys:['wir','sie/Sie']},
       {label:'ihr', key:'ihr'}
     ];
     const modes = ['flash','verbs','grammar','sentences'];
@@ -212,9 +212,6 @@
             throw new Error(item.verb + ' is missing the ' + person + ' form.');
           }
         });
-        // These forms are always identical in standard German. Keep both data keys
-        // for file compatibility, while the interface teaches them as one group.
-        item.present['sie/Sie'] = item.present.wir;
       });
       return clean;
     }
@@ -365,12 +362,23 @@
       state.itemStats[key] = stat;
     }
 
+    function presentGroupAnswer(verb, group){
+      if(!group.keys) return verb.present[group.key];
+      const wirForm=verb.present[group.keys[0]];
+      const sieForm=verb.present[group.keys[1]];
+      if(wirForm===sieForm) return wirForm;
+      // The verb form is identical, but reflexive pronouns differ: uns / sich.
+      if(wirForm.replace(/\buns\b/g,'sich')===sieForm){
+        return wirForm.replace(/\buns\b/g,'uns/sich');
+      }
+      return wirForm+' / '+sieForm;
+    }
     function buildVerbQuestions(){
       return DATA.verbs.map(v=>{
         const fields=formGroups.map(group=>({
           label:group.label,
-          key:group.key,
-          answer:v.present[group.key]
+          key:group.key || group.keys.join('|'),
+          answer:presentGroupAnswer(v,group)
         }));
         if (v.perfekt && !v.skipPerfekt) {
           fields.push({label:'Perfekt', key:'perfekt', answer:v.perfekt});
@@ -589,7 +597,7 @@
       tbody.textContent='';
       DATA.verbs.forEach(v=>{
         const tr=document.createElement('tr');
-        const values=[v.verb,v.meaning||'',...formGroups.map(group=>v.present[group.key]),v.perfekt||'—'];
+        const values=[v.verb,v.meaning||'',...formGroups.map(group=>presentGroupAnswer(v,group)),v.perfekt||'—'];
         values.forEach((value,column)=>{
           const td=document.createElement('td');
           if(column===0){
