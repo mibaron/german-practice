@@ -41,6 +41,22 @@ Selecting a result opens that exact item in Verb Quiz or Flashcards.
 - Escape closes autocomplete results or the shortcut guide.
 - While editing a non-empty answer, the arrow keys retain their normal text-cursor behavior. After a correct answer, they navigate immediately.
 
+## Learned-practice queue
+
+Learned practices are hidden by default in every section.
+
+- Three consecutive correct answers automatically mark an item as learned.
+- **Mark learned** and **Mark as learning** change the status manually.
+- **Include learned** restores learned items for review.
+- A wrong answer returns an item to the active learning queue.
+- Search still finds learned verbs and words, labels them **Learned**, and can
+  open them for review.
+- When a section has no active items, the app shows a completion state with a
+  button to review learned practices.
+
+Learned status and the **Include learned** preference are stored in browser
+progress and included in progress exports.
+
 ## Lesson data
 
 The **Lesson data** panel provides three controls:
@@ -78,8 +94,8 @@ loaded custom file is saved in that browser with `localStorage`.
 
 ## Browser progress
 
-The app automatically saves scores, mastered cards, practice history, and the
-last position with browser `localStorage`.
+The app automatically saves scores, learned statuses, practice history, filters,
+and the last position with browser `localStorage`.
 
 - **Export progress** downloads a JSON progress backup.
 - **Import progress** restores it in another browser or device.
