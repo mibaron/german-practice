@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>German Practice</title>
+  <title>German A1 Practice Lab</title>
   <style>
     :root{
       --bg:#f6f7fb;--card:#fff;--text:#20242c;--muted:#6b7280;--border:#dfe3ea;
@@ -47,8 +47,8 @@
   <main class="wrap">
     <div class="header">
       <div>
-        <h1>German Practice</h1>
-        <p class="sub">Flashcards, verb conjugation, grammar and sentence practice across levels.</p>
+        <h1>German A1 Practice Lab</h1>
+        <p class="sub">Flashcards, full verb conjugation, grammar and sentence practice.</p>
       </div>
       <div class="small muted">Data source: <strong>data.js</strong></div>
     </div>
@@ -143,14 +143,13 @@
   <script src="data.js"></script>
   <script>
   (() => {
-    const DATA = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
+    const DATA = window.GERMAN_A1_DATA;
     if (!DATA) {
       document.getElementById('loadError').classList.remove('hidden');
       return;
     }
 
-    const STORAGE_KEY = 'germanPracticeProgressV1';
-    const LEGACY_STORAGE_KEY = 'germanA1PracticeProgressV1';
+    const STORAGE_KEY = 'germanA1PracticeProgressV1';
     const SCHEMA_VERSION = 1;
     const people = ['ich','du','er/sie/es','wir','ihr','sie/Sie'];
     const modes = ['flash','verbs','grammar','sentences'];
@@ -205,7 +204,7 @@
     let storageWorks = true;
     function loadState(){
       try {
-        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY);
         return raw ? sanitizeState(JSON.parse(raw)) : blankState();
       } catch (err) {
         storageWorks = false;
@@ -381,7 +380,7 @@
     function exportProgress(){
       saveState();
       const payload = {
-        app: 'German Practice',
+        app: 'German A1 Practice Lab',
         schemaVersion: SCHEMA_VERSION,
         exportedAt: new Date().toISOString(),
         lessonDataVersion: DATA.meta && DATA.meta.version ? DATA.meta.version : null,
@@ -391,7 +390,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'german-practice-progress-' + new Date().toISOString().slice(0,10) + '.json';
+      a.download = 'german-a1-progress-' + new Date().toISOString().slice(0,10) + '.json';
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -405,9 +404,8 @@
       reader.onload = () => {
         try {
           const raw = JSON.parse(String(reader.result || ''));
-          const compatibleApps = ['German Practice', 'German A1 Practice Lab'];
-          if (raw.app && !compatibleApps.includes(raw.app)) {
-            throw new Error('This does not look like a German Practice backup.');
+          if (raw.app && raw.app !== 'German A1 Practice Lab') {
+            throw new Error('This does not look like a German A1 Practice Lab backup.');
           }
           state = sanitizeState(raw.progress || raw);
           correct = state.correct;
