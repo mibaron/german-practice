@@ -29,6 +29,12 @@
     .input{width:100%;padding:13px 14px;border:1px solid var(--border);border-radius:12px;margin-top:8px;outline:none;background:#fff}
     .input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
     .feedback{margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:44px}
+    .verb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin-top:18px}
+    .verb-field{display:block;border:1px solid var(--border);border-radius:12px;padding:10px;font-weight:600;background:#fbfcff}
+    .verb-field span{display:block;font-size:.9rem;color:var(--muted)}
+    .verb-field .input{margin-top:6px}
+    .input.correct-field{border-color:var(--good);background:#f2fbf4}
+    .input.wrong-field{border-color:var(--bad);background:#fff4f2}
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
     .stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
     .stat strong{display:block;font-size:1.6rem;margin-top:4px}
@@ -94,9 +100,10 @@
         <div id="quizTag" class="small muted"></div>
         <div id="quizQuestion" class="question" style="margin-top:8px"></div>
         <div id="quizHint" class="small muted" style="margin-top:8px"></div>
-        <label style="display:block;margin-top:18px;font-weight:600">Your answer
+        <label id="singleAnswerLabel" style="display:block;margin-top:18px;font-weight:600">Your answer
           <input id="quizInput" class="input" autocomplete="off" placeholder="Type in German…">
         </label>
+        <div id="verbAnswerGrid" class="verb-grid hidden"></div>
         <div class="actions">
           <button class="btn primary" type="submit">Check</button>
           <button id="toggleQuizAnswer" class="btn" type="button">Show answer</button>
@@ -151,7 +158,7 @@
       <summary>Verb reference table</summary>
       <div class="tablewrap">
         <table>
-          <thead><tr><th>Verb</th><th>Meaning</th><th>ich</th><th>du</th><th>er/sie/es</th><th>wir</th><th>ihr</th><th>sie/Sie</th><th>Perfekt</th></tr></thead>
+          <thead><tr><th>Verb</th><th>Meaning</th><th>ich</th><th>du</th><th>er/sie/es</th><th>wir / sie / Sie</th><th>ihr</th><th>Perfekt</th></tr></thead>
           <tbody id="verbTableBody"></tbody>
         </table>
       </div>
@@ -173,6 +180,13 @@
     const CUSTOM_DATA_STORAGE_KEY = 'germanPracticeCustomLessonDataV1';
     const SCHEMA_VERSION = 1;
     const people = ['ich','du','er/sie/es','wir','ihr','sie/Sie'];
+    const formGroups = [
+      {label:'ich', key:'ich'},
+      {label:'du', key:'du'},
+      {label:'er/sie/es', key:'er/sie/es'},
+      {label:'wir / sie / Sie', key:'wir'},
+      {label:'ihr', key:'ihr'}
+    ];
     const modes = ['flash','verbs','grammar','sentences'];
     const $ = s => document.querySelector(s);
 
@@ -198,6 +212,9 @@
             throw new Error(item.verb + ' is missing the ' + person + ' form.');
           }
         });
+        // These forms are always identical in standard German. Keep both data keys
+        // for file compatibility, while the interface teaches them as one group.
+        item.present['sie/Sie'] = item.present.wir;
       });
       return clean;
     }
@@ -349,16 +366,23 @@
     }
 
     function buildVerbQuestions(){
-      const out=[];
-      DATA.verbs.forEach(v=>{
-        people.forEach(p=>{
-          out.push({type:'Conjugate '+v.verb, question:p+' → ?', answer:v.present[p], explanation:'Präsens'});
-        });
+      return DATA.verbs.map(v=>{
+        const fields=formGroups.map(group=>({
+          label:group.label,
+          key:group.key,
+          answer:v.present[group.key]
+        }));
         if (v.perfekt && !v.skipPerfekt) {
-          out.push({type:'Perfekt of '+v.verb, question:v.verb+' → ?', answer:v.perfekt, explanation:'Perfekt'});
+          fields.push({label:'Perfekt', key:'perfekt', answer:v.perfekt});
         }
+        return {
+          type:'Complete conjugation',
+          question:v.verb,
+          answer:fields.map(field=>field.label+': '+field.answer).join(' | '),
+          explanation:v.meaning || 'Fill in every form.',
+          fields
+        };
       });
-      return out;
     }
     let verbQs=buildVerbQuestions();
 
@@ -403,6 +427,24 @@
       $('#answerReveal').classList.add('hidden');
       $('#toggleQuizAnswer').textContent='Show answer';
     }
+    function renderVerbInputs(q){
+      const grid=$('#verbAnswerGrid');
+      grid.textContent='';
+      q.fields.forEach(field=>{
+        const label=document.createElement('label');
+        label.className='verb-field';
+        const caption=document.createElement('span');
+        caption.textContent=field.label;
+        const input=document.createElement('input');
+        input.className='input';
+        input.autocomplete='off';
+        input.placeholder='Type in German…';
+        input.dataset.answer=field.answer;
+        input.dataset.label=field.label;
+        label.append(caption,input);
+        grid.appendChild(label);
+      });
+    }
     function showQuiz(){
       correctSubmitReadyForNext = false;
       const list=currentList();
@@ -415,16 +457,40 @@
       $('#quizHint').textContent=mode==='verbs' ? (q.explanation||'') : '';
       $('#quizInput').value='';
       $('#feedback').textContent='';
+      const isVerbCard=mode==='verbs';
+      $('#singleAnswerLabel').classList.toggle('hidden',isVerbCard);
+      $('#verbAnswerGrid').classList.toggle('hidden',!isVerbCard);
+      if(isVerbCard) renderVerbInputs(q);
+      else $('#verbAnswerGrid').textContent='';
       hideQuizAnswer();
       $('#progress').textContent=(index+1)+' / '+quizOrder.length;
       saveState();
-      $('#quizInput').focus();
+      const firstInput=isVerbCard ? $('#verbAnswerGrid').querySelector('input') : $('#quizInput');
+      if(firstInput) firstInput.focus();
     }
     function toggleQuizAnswer(){
       const q=currentList()[quizOrder[index]];
       const box=$('#answerReveal');
       if(box.classList.contains('hidden')){
-        box.innerHTML='<strong>Answer:</strong> '+q.answer+(q.explanation?'<br><span class="muted">'+q.explanation+'</span>':'');
+        box.textContent='';
+        const heading=document.createElement('strong');
+        heading.textContent='Answer:';
+        box.appendChild(heading);
+        if(mode==='verbs'){
+          q.fields.forEach(field=>{
+            const line=document.createElement('div');
+            line.textContent=field.label+': '+field.answer;
+            box.appendChild(line);
+          });
+        }else{
+          box.appendChild(document.createTextNode(' '+q.answer));
+          if(q.explanation){
+            const note=document.createElement('div');
+            note.className='muted';
+            note.textContent=q.explanation;
+            box.appendChild(note);
+          }
+        }
         box.classList.remove('hidden');
         $('#toggleQuizAnswer').textContent='Hide answer';
       }else{
@@ -523,9 +589,18 @@
       tbody.textContent='';
       DATA.verbs.forEach(v=>{
         const tr=document.createElement('tr');
-        tr.innerHTML='<td><strong>'+v.verb+'</strong></td><td>'+(v.meaning||'')+'</td>'+
-          people.map(p=>'<td>'+v.present[p]+'</td>').join('')+
-          '<td>'+(v.perfekt||'—')+'</td>';
+        const values=[v.verb,v.meaning||'',...formGroups.map(group=>v.present[group.key]),v.perfekt||'—'];
+        values.forEach((value,column)=>{
+          const td=document.createElement('td');
+          if(column===0){
+            const strong=document.createElement('strong');
+            strong.textContent=value;
+            td.appendChild(strong);
+          }else{
+            td.textContent=value;
+          }
+          tr.appendChild(td);
+        });
         tbody.appendChild(tr);
       });
     }
@@ -639,11 +714,26 @@
         return;
       }
       const q=currentList()[quizOrder[index]];
-      const given=normalize($('#quizInput').value);
-      const ans=normalize(q.answer);
-      if(!given){ $('#feedback').textContent='Type an answer first.'; return; }
+      let isCorrect=false;
+      if(mode==='verbs'){
+        const inputs=[...$('#verbAnswerGrid').querySelectorAll('input')];
+        if(inputs.some(input=>!normalize(input.value))){
+          $('#feedback').textContent='Complete all forms first.';
+          return;
+        }
+        isCorrect=inputs.every(input=>normalize(input.value)===normalize(input.dataset.answer));
+        inputs.forEach(input=>{
+          const matches=normalize(input.value)===normalize(input.dataset.answer);
+          input.classList.toggle('correct-field',matches);
+          input.classList.toggle('wrong-field',!matches);
+          input.setAttribute('aria-invalid',matches?'false':'true');
+        });
+      }else{
+        const given=normalize($('#quizInput').value);
+        if(!given){ $('#feedback').textContent='Type an answer first.'; return; }
+        isCorrect=given===normalize(q.answer);
+      }
       attempts++;
-      const isCorrect = given===ans;
       recordItem(currentItemKey(q), isCorrect);
       if(isCorrect){
         correct++;
@@ -652,7 +742,9 @@
           '<br><span class="muted">Press Enter again for the next question.</span>';
       }else{
         correctSubmitReadyForNext = false;
-        $('#feedback').innerHTML='❌ Not quite. Try again, or use “Show answer”.';
+        $('#feedback').innerHTML=mode==='verbs' ?
+          '❌ Not quite. Review the highlighted forms, then try again or show the answer.' :
+          '❌ Not quite. Try again, or use “Show answer”.';
       }
       scoreUpdate();
       saveState(true);
