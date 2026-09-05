@@ -8,7 +8,22 @@ The current data includes a complete Goethe-based adult A1 verb pack.
 - `index.html` — application interface and logic
 - `data.js` — core lesson content
 - `a1-verbs.js` — modular A1 verbs, conjugations, Perfekt forms and exercises
+- `menschen-lessons-12-14.js` — original vocabulary and grammar practice aligned to lessons 12–14
 - `A1_VERBS.md` — human-readable A1 verb list
+
+## Practice-set filter
+
+Use the **Practice set** menu at the top of the app to show all material, only
+lesson 12, 13, or 14, or the existing untagged material. The selection applies
+to flashcards, grammar, sentence practice, search results, learned counts, and
+the verb reference table, and it is saved with browser progress.
+
+The lessons 12–14 pack contains original supplementary material rather than
+reproductions of textbook exercises:
+
+- Lesson 12: festivals, months and seasons, time expressions, and past events
+- Lesson 13: places in town, directions, and local prepositions with dative
+- Lesson 14: homes and rooms, possessive articles, and genitive names
 
 ## Verb conjugation practice
 

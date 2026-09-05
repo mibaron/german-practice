@@ -10,11 +10,15 @@
       --accent:#3157d5;--accent-soft:#e9eeff;--good:#137333;--bad:#b3261e
     }
     *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
-    button,input{font:inherit} button{cursor:pointer}
+    button,input,select{font:inherit} button{cursor:pointer}
     .wrap{max-width:980px;margin:auto;padding:24px}
     .header{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
     .header-tools{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
     h1{margin:0 0 6px;font-size:clamp(1.6rem,4vw,2.2rem)} .sub{color:var(--muted);margin:0}
+    .lesson-filter{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin:18px 0}
+    .lesson-filter-control{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .lesson-select{min-width:290px;max-width:100%;padding:11px 38px 11px 12px;border:1px solid var(--border);border-radius:11px;background:#fff;color:var(--text);outline:none;cursor:pointer}
+    .lesson-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
     .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
     .tabs button,.btn{border:1px solid var(--border);background:var(--card);border-radius:12px;padding:12px 14px}
     .tabs button.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
@@ -74,7 +78,7 @@
     .backup-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
     .status{margin-top:10px;font-size:.9rem;color:var(--muted)}
     .status.good{color:var(--good)} .status.bad{color:var(--bad)}
-    @media(max-width:650px){.wrap{padding:14px}.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr}.panel{padding:15px}}
+    @media(max-width:650px){.wrap{padding:14px}.lesson-filter-control,.lesson-select{width:100%}.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr}.panel{padding:15px}}
   </style>
 </head>
 <body>
@@ -86,13 +90,27 @@
       </div>
       <div class="header-tools">
         <button id="shortcutsBtn" class="btn" type="button" aria-haspopup="dialog">⌨️ Keyboard shortcuts</button>
-        <div class="small muted">Data source: <strong>data.js</strong></div>
+        <div class="small muted">Data source: <strong>bundled lesson packs</strong></div>
       </div>
     </div>
 
     <div id="loadError" class="error hidden">
       The lesson data could not be loaded. Keep <strong>data.js</strong> in the same folder as <strong>index.html</strong>.
     </div>
+
+    <section class="lesson-filter" aria-labelledby="lessonFilterLabel">
+      <div class="lesson-filter-control">
+        <label id="lessonFilterLabel" for="lessonFilter"><strong>Practice set</strong></label>
+        <select id="lessonFilter" class="lesson-select">
+          <option value="all">All practice</option>
+          <option value="12">Lesson 12 · Festivals &amp; events</option>
+          <option value="13">Lesson 13 · Around town &amp; directions</option>
+          <option value="14">Lesson 14 · Homes &amp; rooms</option>
+          <option value="other">Existing practice · other material</option>
+        </select>
+      </div>
+      <div id="lessonFilterSummary" class="small muted" aria-live="polite"></div>
+    </section>
 
     <section class="tabs" aria-label="Practice mode">
       <button data-mode="flash" class="active">🃏 Flashcards</button>
@@ -236,6 +254,7 @@
 
   <script src="data.js"></script>
   <script src="a1-verbs.js"></script>
+  <script src="menschen-lessons-12-14.js"></script>
   <script>
   (() => {
     let DATA = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
@@ -247,7 +266,7 @@
     const STORAGE_KEY = 'germanPracticeProgressV1';
     const LEGACY_STORAGE_KEY = 'germanA1PracticeProgressV1';
     const CUSTOM_DATA_STORAGE_KEY = 'germanPracticeCustomLessonDataV1';
-    const SCHEMA_VERSION = 2;
+    const SCHEMA_VERSION = 3;
     const people = ['ich','du','er/sie/es','wir','ihr','sie/Sie'];
     const formGroups = [
       {label:'ich', key:'ich'},
@@ -257,6 +276,14 @@
       {label:'ihr', key:'ihr'}
     ];
     const modes = ['flash','verbs','grammar','sentences'];
+    const lessonFilters = ['all','12','13','14','other'];
+    const lessonFilterLabels = {
+      all: 'All practice',
+      12: 'Lesson 12',
+      13: 'Lesson 13',
+      14: 'Lesson 14',
+      other: 'Existing practice'
+    };
     const $ = s => document.querySelector(s);
     let searchItems=[];
     let searchMatches=[];
@@ -312,6 +339,7 @@
         includeLearned: false,
         itemStats: {},
         positions: {flash:0, verbs:0, grammar:0, sentences:0},
+        lessonFilter: 'all',
         lastMode: 'flash',
         savedAt: null
       };
@@ -344,6 +372,7 @@
         });
       }
       clean.includeLearned = raw.includeLearned === true;
+      clean.lessonFilter = lessonFilters.includes(String(raw.lessonFilter)) ? String(raw.lessonFilter) : 'all';
       if (raw.itemStats && typeof raw.itemStats === 'object') {
         Object.entries(raw.itemStats).forEach(([k,v]) => {
           if (!v || typeof v !== 'object') return;
@@ -373,6 +402,7 @@
 
     let state = loadState();
     let mode = state.lastMode;
+    let lessonFilter = state.lessonFilter;
     let index = safeInt(state.positions[mode]);
     let correct = state.correct;
     let attempts = state.attempts;
@@ -396,6 +426,20 @@
     }
     function currentItemKey(q){ return quizKey(mode, q); }
 
+    function itemLesson(item){
+      if(!item || item.lesson == null || String(item.lesson).trim()==='') return 'other';
+      return String(item.lesson).replace(/^lesson\s*/i,'').trim();
+    }
+    function matchesLesson(item){
+      if(lessonFilter==='all') return true;
+      const value=itemLesson(item);
+      return lessonFilter==='other' ? value==='other' : value===lessonFilter;
+    }
+    function lessonBadge(item, fallback){
+      const value=itemLesson(item);
+      return value==='other' ? fallback : 'L'+value+' · '+fallback;
+    }
+
     function setStatus(message, kind=''){
       const el = $('#storageStatus');
       el.textContent = message;
@@ -405,6 +449,7 @@
       state.correct = correct;
       state.attempts = attempts;
       state.lastMode = mode;
+      state.lessonFilter = lessonFilter;
       state.positions[mode] = index;
       state.savedAt = new Date().toISOString();
 
@@ -445,10 +490,10 @@
       }
     }
     function allPracticeKeys(){
-      const keys=DATA.flashcards.map(flashKey);
-      verbQs.forEach(q=>keys.push(quizKey('verbs',q)));
-      DATA.grammar.forEach(q=>keys.push(quizKey('grammar',q)));
-      DATA.sentences.forEach(q=>keys.push(quizKey('sentences',q)));
+      const keys=DATA.flashcards.filter(matchesLesson).map(flashKey);
+      verbQs.filter(matchesLesson).forEach(q=>keys.push(quizKey('verbs',q)));
+      DATA.grammar.filter(matchesLesson).forEach(q=>keys.push(quizKey('grammar',q)));
+      DATA.sentences.filter(matchesLesson).forEach(q=>keys.push(quizKey('sentences',q)));
       return [...new Set(keys)];
     }
     function masteredCount(){
@@ -459,6 +504,7 @@
       $('#attemptScore').textContent=attempts;
       $('#accuracyScore').textContent=attempts ? Math.round(correct/attempts*100)+'%' : '—';
       $('#masteredScore').textContent=masteredCount() + '/' + allPracticeKeys().length;
+      updateLessonFilterUi();
     }
     function recordItem(key, wasCorrect){
       const stat = state.itemStats[key] || {attempts:0, correct:0, correctStreak:0, lastAt:null};
@@ -502,7 +548,9 @@
           question:v.verb,
           answer:fields.map(field=>field.label+': '+field.answer).join(' | '),
           explanation:v.meaning || 'Fill in every form.',
-          fields
+          fields,
+          lesson:v.lesson,
+          pack:v.pack
         };
       });
     }
@@ -522,11 +570,10 @@
       return q ? currentItemKey(q) : null;
     }
     function modeLearnedCount(){
-      if(mode==='flash') return DATA.flashcards.reduce((n,card)=>n+(isLearnedKey(flashKey(card))?1:0),0);
-      return currentList().reduce((n,q)=>n+(isLearnedKey(quizKey(mode,q))?1:0),0);
+      if(mode==='flash') return DATA.flashcards.filter(matchesLesson).reduce((n,card)=>n+(isLearnedKey(flashKey(card))?1:0),0);
+      return currentList().filter(matchesLesson).reduce((n,q)=>n+(isLearnedKey(quizKey(mode,q))?1:0),0);
     }
     function updateQueueUi(){
-      const total=mode==='flash' ? DATA.flashcards.length : currentList().length;
       const learned=modeLearnedCount();
       const shown=mode==='flash' ? flashOrder.length : quizOrder.length;
       $('#queueSummary').textContent=state.includeLearned ?
@@ -541,10 +588,12 @@
     }
     function buildFlashOrder(){
       return [...Array(DATA.flashcards.length).keys()]
+        .filter(i=>matchesLesson(DATA.flashcards[i]))
         .filter(i=>state.includeLearned || !isLearnedKey(flashKey(DATA.flashcards[i])));
     }
     function makeQuizOrder(){
       quizOrder=[...Array(currentList().length).keys()]
+        .filter(i=>matchesLesson(currentList()[i]))
         .filter(i=>state.includeLearned || !isLearnedKey(quizKey(mode,currentList()[i])));
     }
     function showCompletion(){
@@ -552,7 +601,9 @@
       $('#flashPanel').classList.add('hidden');
       $('#quizPanel').classList.add('hidden');
       $('#progress').textContent='0 / 0';
-      $('#completionMessage').textContent=state.includeLearned ?
+      const total=mode==='flash' ? DATA.flashcards.filter(matchesLesson).length : currentList().filter(matchesLesson).length;
+      $('#completionMessage').textContent=total===0 ?
+        'There are no '+lessonFilterLabels[lessonFilter].toLowerCase()+' items in this section.' : state.includeLearned ?
         'There are no practices in this section.' :
         'Everything in this section is learned. Include learned practices whenever you want to review.';
       updateQueueUi();
@@ -741,6 +792,7 @@
           correct = state.correct;
           attempts = state.attempts;
           mode = modes.includes(state.lastMode) ? state.lastMode : 'flash';
+          lessonFilter = lessonFilters.includes(state.lessonFilter) ? state.lessonFilter : 'all';
           index = safeInt(state.positions[mode]);
 
           storageWorks = true;
@@ -748,6 +800,8 @@
           catch (err) { storageWorks = false; }
 
           $('#includeLearned').checked=state.includeLearned;
+          rebuildSearchIndex();
+          renderVerbTable();
           scoreUpdate();
           switchMode(mode);
           setStatus(
@@ -773,6 +827,11 @@
       el.textContent = message;
       el.className = 'status' + (kind ? ' ' + kind : '');
     }
+    function updateLessonFilterUi(){
+      $('#lessonFilter').value=lessonFilter;
+      const count=allPracticeKeys().length;
+      $('#lessonFilterSummary').textContent=lessonFilterLabels[lessonFilter]+' · '+count+' practice '+(count===1?'item':'items');
+    }
     function flashcardSearchTitle(card){
       const front=String(card.front||'').trim();
       const separator=front.indexOf(' — ');
@@ -780,23 +839,25 @@
     }
     function rebuildSearchIndex(){
       const verbItems=DATA.verbs.map((verb,dataIndex)=>({
-        kind:'Verb',
+        kind:lessonBadge(verb,'Verb'),
         title:verb.verb,
         detail:verb.meaning||'Open conjugation practice',
         searchText:[verb.verb,verb.meaning,...Object.values(verb.present||{}),verb.perfekt||''].join(' '),
         mode:'verbs',
         dataIndex,
+        lesson:itemLesson(verb),
         key:quizKey('verbs',verbQs[dataIndex])
-      }));
+      })).filter(item=>lessonFilter==='all' || (lessonFilter==='other' ? item.lesson==='other' : item.lesson===lessonFilter));
       const wordItems=DATA.flashcards.map((card,dataIndex)=>({
-        kind:'Word',
+        kind:lessonBadge(card,'Word'),
         title:flashcardSearchTitle(card),
         detail:String(card.back||'Open flashcard'),
         searchText:[card.front||'',card.back||''].join(' '),
         mode:'flash',
         dataIndex,
+        lesson:itemLesson(card),
         key:flashKey(card)
-      }));
+      })).filter(item=>lessonFilter==='all' || (lessonFilter==='other' ? item.lesson==='other' : item.lesson===lessonFilter));
       searchItems=[...verbItems,...wordItems];
     }
     function closeSearchResults(){
@@ -827,15 +888,10 @@
         $('#includeLearned').checked=true;
       }
       switchMode(item.mode);
-      if(item.mode==='verbs'){
-        index=Math.max(0,Math.min(item.dataIndex,verbQs.length-1));
-        quizOrder=[...Array(verbQs.length).keys()];
-        showQuiz();
-      }else{
-        const orderedIndex=flashOrder.indexOf(item.dataIndex);
-        index=orderedIndex>=0 ? orderedIndex : 0;
-        showFlash();
-      }
+      const order=item.mode==='flash' ? flashOrder : quizOrder;
+      const orderedIndex=order.indexOf(item.dataIndex);
+      index=orderedIndex>=0 ? orderedIndex : 0;
+      if(item.mode==='flash') showFlash(); else showQuiz();
     }
     function renderSearchResults(query){
       const needle=String(query||'').toLocaleLowerCase('de-DE').trim();
@@ -902,7 +958,18 @@
     function renderVerbTable(){
       const tbody=$('#verbTableBody');
       tbody.textContent='';
-      DATA.verbs.forEach(v=>{
+      const visibleVerbs=DATA.verbs.filter(matchesLesson);
+      if(!visibleVerbs.length){
+        const row=document.createElement('tr');
+        const cell=document.createElement('td');
+        cell.colSpan=8;
+        cell.className='muted';
+        cell.textContent='No verb reference entries in this practice set.';
+        row.appendChild(cell);
+        tbody.appendChild(row);
+        return;
+      }
+      visibleVerbs.forEach(v=>{
         const tr=document.createElement('tr');
         const values=[v.verb,v.meaning||'',...formGroups.map(group=>presentGroupAnswer(v,group)),v.perfekt||'—'];
         values.forEach((value,column)=>{
@@ -928,6 +995,19 @@
       renderVerbTable();
       scoreUpdate();
       switchMode(mode);
+    }
+    function applyLessonFilter(next){
+      lessonFilter=lessonFilters.includes(String(next)) ? String(next) : 'all';
+      state.lessonFilter=lessonFilter;
+      modes.forEach(item=>state.positions[item]=0);
+      index=0;
+      $('#practiceSearch').value='';
+      closeSearchResults();
+      rebuildSearchIndex();
+      renderVerbTable();
+      scoreUpdate();
+      switchMode(mode);
+      saveState();
     }
     function activateLessonData(nextData, options={}){
       DATA=normalizeLessonData(nextData);
@@ -996,6 +1076,7 @@
     }
 
     document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>switchMode(b.dataset.mode)));
+    $('#lessonFilter').addEventListener('change',e=>applyLessonFilter(e.target.value));
     $('#toggleFlashAnswer').addEventListener('click',toggleFlashAnswer);
     $('#prevFlash').addEventListener('click',()=>moveBy(-1));
 
@@ -1118,12 +1199,15 @@
       correct=0;
       attempts=0;
       mode='flash';
+      lessonFilter='all';
       index=0;
       if (storageWorks) {
         try { localStorage.removeItem(STORAGE_KEY); }
         catch (err) { storageWorks=false; }
       }
       $('#includeLearned').checked=false;
+      rebuildSearchIndex();
+      renderVerbTable();
       scoreUpdate();
       switchMode('flash');
       saveState(true);
@@ -1193,6 +1277,7 @@
       moveBy(e.key === 'ArrowRight' ? 1 : -1);
     });
 
+    $('#lessonFilter').value=lessonFilter;
     rebuildSearchIndex();
     renderVerbTable();
     $('#includeLearned').checked=state.includeLearned;
