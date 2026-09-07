@@ -106,6 +106,9 @@
           <option value="12">Lesson 12 · Festivals &amp; events</option>
           <option value="13">Lesson 13 · Around town &amp; directions</option>
           <option value="14">Lesson 14 · Homes &amp; rooms</option>
+          <option value="15">Lesson 15 · Neighborhoods &amp; nature</option>
+          <option value="16">Lesson 16 · Hotel problems &amp; appointments</option>
+          <option value="17">Lesson 17 · Education &amp; plans</option>
           <option value="other">Existing practice · other material</option>
         </select>
       </div>
@@ -255,6 +258,7 @@
   <script src="data.js"></script>
   <script src="a1-verbs.js"></script>
   <script src="menschen-lessons-12-14.js"></script>
+  <script src="menschen-lessons-15-17.js"></script>
   <script>
   (() => {
     let DATA = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
@@ -276,12 +280,15 @@
       {label:'ihr', key:'ihr'}
     ];
     const modes = ['flash','verbs','grammar','sentences'];
-    const lessonFilters = ['all','12','13','14','other'];
+    const lessonFilters = ['all','12','13','14','15','16','17','other'];
     const lessonFilterLabels = {
       all: 'All practice',
       12: 'Lesson 12',
       13: 'Lesson 13',
       14: 'Lesson 14',
+      15: 'Lesson 15',
+      16: 'Lesson 16',
+      17: 'Lesson 17',
       other: 'Existing practice'
     };
     const $ = s => document.querySelector(s);
