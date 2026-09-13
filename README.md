@@ -10,12 +10,13 @@ The current data includes a complete Goethe-based adult A1 verb pack.
 - `a1-verbs.js` — modular A1 verbs, conjugations, Perfekt forms and exercises
 - `menschen-lessons-12-14.js` — original vocabulary and grammar practice aligned to lessons 12–14
 - `menschen-lessons-15-17.js` — original vocabulary, grammar, and sentence practice aligned to lessons 15–17
+- `menschen-lessons-19-20.js` — original vocabulary, grammar, and sentence practice aligned to lessons 19–20
 - `A1_VERBS.md` — human-readable A1 verb list
 
 ## Practice-set filter
 
-Use the **Practice set** menu at the top of the app to show all material, only
-one of lessons 12–17, or the existing untagged material. The selection applies
+Use the **Practice set** menu at the top of the app to show all material, one of
+the bundled lessons, or the existing untagged material. The selection applies
 to flashcards, grammar, sentence practice, search results, learned counts, and
 the verb reference table, and it is saved with browser progress.
 
@@ -28,6 +29,8 @@ reproductions of textbook exercises:
 - Lesson 15: neighborhoods, city and nature, and dative personal pronouns
 - Lesson 16: hotel problems, asking for help, appointments, and temporal prepositions
 - Lesson 17: education and career plans, `mit`/`ohne`, `wollen`, and `werden`
+- Lesson 19: describing people, past forms of `sein`/`haben`, `un-`, and inseparable Perfekt forms
+- Lesson 20: household chores, imperatives, polite requests, and accusative pronouns
 
 ## Verb conjugation practice
 
