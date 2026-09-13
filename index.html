@@ -70,6 +70,18 @@
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
     .stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
     .stat strong{display:block;font-size:1.6rem;margin-top:4px}
+    .case-reference{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+    .reference-head h2{margin:0;font-size:1.3rem}.reference-head p{margin:6px 0 0}
+    .case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+    .case-card,.pronoun-card{border:1px solid var(--border);border-radius:12px;padding:16px;background:#fff}
+    .case-title{display:flex;align-items:center;gap:9px;font-size:1.05rem}
+    .case-badge{display:inline-flex;align-items:center;justify-content:center;min-width:44px;border-radius:999px;padding:4px 9px;background:var(--accent-soft);color:var(--accent);font-size:.75rem;font-weight:800;letter-spacing:.04em}
+    .case-question{margin:7px 0 0;color:var(--muted);font-size:.9rem}
+    .case-card table{min-width:390px;font-size:.84rem}.case-card th,.case-card td{padding:8px 6px}.case-card .tablewrap{margin-top:12px}
+    .case-example{margin:12px 0 0;border-left:3px solid var(--accent);padding:8px 10px;background:var(--accent-soft);border-radius:0 8px 8px 0;font-size:.9rem}
+    .pronoun-card{margin-top:14px}.pronoun-card h3{margin:0;font-size:1.05rem}.pronoun-card table{min-width:520px}
+    .case-tips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+    .case-tip{border-radius:10px;background:#f7f8fa;padding:12px;font-size:.9rem;line-height:1.45}
     details{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
     summary{font-weight:700;cursor:pointer}.tablewrap{overflow:auto;margin-top:12px}
     table{border-collapse:collapse;width:100%;min-width:760px;font-size:.9rem} th,td{border-bottom:1px solid var(--border);padding:9px;text-align:left} th{background:#fafafa}
@@ -78,7 +90,8 @@
     .backup-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
     .status{margin-top:10px;font-size:.9rem;color:var(--muted)}
     .status.good{color:var(--good)} .status.bad{color:var(--bad)}
-    @media(max-width:650px){.wrap{padding:14px}.lesson-filter-control,.lesson-select{width:100%}.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr}.panel{padding:15px}}
+    @media(max-width:760px){.case-grid,.case-tips{grid-template-columns:1fr}}
+    @media(max-width:650px){.wrap{padding:14px}.lesson-filter-control,.lesson-select{width:100%}.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr}.panel{padding:15px}.case-reference{padding:15px}}
   </style>
 </head>
 <body>
@@ -193,6 +206,76 @@
       <div class="stat"><span class="small muted">Attempts</span><strong id="attemptScore">0</strong></div>
       <div class="stat"><span class="small muted">Accuracy</span><strong id="accuracyScore">—</strong></div>
       <div class="stat"><span class="small muted">Learned practices</span><strong id="masteredScore">0</strong></div>
+    </section>
+
+    <section class="case-reference" aria-labelledby="caseReferenceTitle">
+      <div class="reference-head">
+        <h2 id="caseReferenceTitle">Akkusativ &amp; Dativ reference</h2>
+        <p class="small muted">Quick lookup for articles, personal pronouns, and the most useful A1 rules.</p>
+      </div>
+
+      <div class="case-grid">
+        <article class="case-card">
+          <div class="case-title"><span class="case-badge">AKK</span><strong>Akkusativ</strong></div>
+          <p class="case-question">Direct object · Ask <strong>Wen?</strong> or <strong>Was?</strong></p>
+          <div class="tablewrap">
+            <table aria-label="Accusative article endings">
+              <thead><tr><th>Gender</th><th>Definite</th><th>ein-</th><th>kein-</th><th>mein-</th></tr></thead>
+              <tbody>
+                <tr><th>Masculine</th><td>den</td><td>einen</td><td>keinen</td><td>meinen</td></tr>
+                <tr><th>Neuter</th><td>das</td><td>ein</td><td>kein</td><td>mein</td></tr>
+                <tr><th>Feminine</th><td>die</td><td>eine</td><td>keine</td><td>meine</td></tr>
+                <tr><th>Plural</th><td>die</td><td>—</td><td>keine</td><td>meine</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="case-example"><strong>Example:</strong> Ich sehe <strong>den Mann</strong> und kaufe <strong>eine Jacke</strong>.</p>
+        </article>
+
+        <article class="case-card">
+          <div class="case-title"><span class="case-badge">DAT</span><strong>Dativ</strong></div>
+          <p class="case-question">Indirect object · Ask <strong>Wem?</strong></p>
+          <div class="tablewrap">
+            <table aria-label="Dative article endings">
+              <thead><tr><th>Gender</th><th>Definite</th><th>ein-</th><th>kein-</th><th>mein-</th></tr></thead>
+              <tbody>
+                <tr><th>Masculine</th><td>dem</td><td>einem</td><td>keinem</td><td>meinem</td></tr>
+                <tr><th>Neuter</th><td>dem</td><td>einem</td><td>keinem</td><td>meinem</td></tr>
+                <tr><th>Feminine</th><td>der</td><td>einer</td><td>keiner</td><td>meiner</td></tr>
+                <tr><th>Plural</th><td>den + -(e)n</td><td>—</td><td>keinen + -(e)n</td><td>meinen + -(e)n</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="case-example"><strong>Example:</strong> Ich helfe <strong>dem Mann</strong> und spreche mit <strong>den Kindern</strong>.</p>
+        </article>
+      </div>
+
+      <article class="pronoun-card">
+        <h3>Personal pronouns: Nominativ → Akkusativ → Dativ</h3>
+        <div class="tablewrap">
+          <table aria-label="Personal pronouns in nominative, accusative, and dative">
+            <thead><tr><th>Nominativ</th><th>Akkusativ</th><th>Dativ</th></tr></thead>
+            <tbody>
+              <tr><td>ich</td><td>mich</td><td>mir</td></tr>
+              <tr><td>du</td><td>dich</td><td>dir</td></tr>
+              <tr><td>er</td><td>ihn</td><td>ihm</td></tr>
+              <tr><td>sie</td><td>sie</td><td>ihr</td></tr>
+              <tr><td>es</td><td>es</td><td>ihm</td></tr>
+              <tr><td>wir</td><td>uns</td><td>uns</td></tr>
+              <tr><td>ihr</td><td>euch</td><td>euch</td></tr>
+              <tr><td>sie</td><td>sie</td><td>ihnen</td></tr>
+              <tr><td>Sie</td><td>Sie</td><td>Ihnen</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <div class="case-tips">
+        <div class="case-tip"><strong>Akkusativ prepositions:</strong> durch, für, gegen, ohne, um</div>
+        <div class="case-tip"><strong>Dativ prepositions:</strong> aus, bei, mit, nach, seit, von, zu</div>
+        <div class="case-tip"><strong>Common Dativ verbs:</strong> helfen, danken, gefallen, gehören</div>
+        <div class="case-tip"><strong>Useful contractions:</strong> im = in dem, am = an dem, zum = zu dem, zur = zu der</div>
+      </div>
     </section>
 
     <section class="backup" aria-labelledby="backupTitle">

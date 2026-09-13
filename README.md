@@ -32,6 +32,13 @@ reproductions of textbook exercises:
 - Lesson 19: describing people, past forms of `sein`/`haben`, `un-`, and inseparable Perfekt forms
 - Lesson 20: household chores, imperatives, polite requests, and accusative pronouns
 
+## Akkusativ and Dativ reference
+
+Below the practice stats, the app includes side-by-side Akkusativ and Dativ
+article tables, a Nominativ/Akkusativ/Dativ personal-pronoun table, and short
+reminders for common verbs, prepositions, contractions, and the dative-plural
+`-(e)n` ending.
+
 ## Verb conjugation practice
 
 Each verb appears as one card with all of its forms together:
