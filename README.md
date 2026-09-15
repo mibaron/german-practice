@@ -32,6 +32,13 @@ reproductions of textbook exercises:
 - Lesson 19: describing people, past forms of `sein`/`haben`, `un-`, and inseparable Perfekt forms
 - Lesson 20: household chores, imperatives, polite requests, and accusative pronouns
 
+## Flashcards
+
+Flashcards show an English clue first so the learner has to recall the German
+word or phrase. Revealing the answer shows the German form and, when available,
+a German example sentence. Each card also has a saved attempt bar: green shows
+correct tries and red shows incorrect tries for that specific card.
+
 ## Akkusativ and Dativ reference
 
 Below the practice stats, the app includes side-by-side Akkusativ and Dativ

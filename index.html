@@ -34,6 +34,14 @@
     .card{border:1px solid var(--border);border-radius:16px;padding:24px;min-height:210px;background:#fbfcff}
     .question{font-size:1.25rem;font-weight:700;line-height:1.45}
     .answer{border-top:1px solid var(--border);margin-top:18px;padding-top:18px;line-height:1.55}
+    .answer-label{display:block;margin-bottom:5px;font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+    .flash-history{border-top:1px solid var(--border);margin-top:20px;padding-top:16px}
+    .flash-history-head,.flash-history-legend{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .flash-history-title{font-weight:700}.flash-history-summary{color:var(--muted);font-size:.85rem}
+    .attempt-track{display:flex;width:100%;height:12px;margin-top:9px;overflow:hidden;border-radius:999px;background:#e7e9ee;box-shadow:inset 0 0 0 1px rgba(32,36,44,.06)}
+    .attempt-segment{display:block;width:0;transition:width .2s ease}.attempt-correct{background:#2e9b50}.attempt-wrong{background:#d94a43}
+    .flash-history-legend{justify-content:flex-start;margin-top:8px;color:var(--muted);font-size:.8rem}
+    .history-key{display:inline-flex;align-items:center;gap:6px}.history-dot{width:9px;height:9px;border-radius:50%}.history-dot.good{background:#2e9b50}.history-dot.bad{background:#d94a43}
     .hidden{display:none!important}
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
     .primary{background:var(--accent)!important;color:#fff;border-color:var(--accent)!important}
@@ -171,9 +179,26 @@
 
       <div id="flashPanel">
         <div class="card">
-          <div class="small muted">FLASHCARD</div>
+          <div class="small muted">ENGLISH · SAY IT IN GERMAN</div>
           <div id="flashQuestion" class="question" style="margin-top:10px"></div>
-          <div id="flashAnswer" class="answer hidden"></div>
+          <div id="flashAnswer" class="answer hidden">
+            <span class="answer-label">German</span>
+            <div id="flashAnswerText"></div>
+          </div>
+          <div class="flash-history">
+            <div class="flash-history-head">
+              <span class="flash-history-title">Past tries</span>
+              <span id="flashHistorySummary" class="flash-history-summary">No tries yet</span>
+            </div>
+            <div id="flashHistoryBar" class="attempt-track" role="img" aria-label="No tries yet">
+              <span id="flashCorrectBar" class="attempt-segment attempt-correct"></span>
+              <span id="flashWrongBar" class="attempt-segment attempt-wrong"></span>
+            </div>
+            <div class="flash-history-legend" aria-hidden="true">
+              <span class="history-key"><span class="history-dot good"></span><span id="flashCorrectCount">0 correct</span></span>
+              <span class="history-key"><span class="history-dot bad"></span><span id="flashWrongCount">0 incorrect</span></span>
+            </div>
+          </div>
         </div>
         <div class="actions">
           <button id="prevFlash" class="btn" type="button">← Previous</button>
@@ -516,6 +541,54 @@
     function flashKey(card){
       return 'flash:' + hashText((card.front||'') + '|' + (card.back||''));
     }
+    const coreFlashcardSides = {
+      'seit — when do we use it?': ['since / for, when something is still continuing', 'seit · Ich lerne seit zwei Jahren Deutsch.'],
+      'vor — what does it mean with time?': ['ago, for a finished point in the past', 'vor · Vor einem Monat war ich in Berlin.'],
+      'seit zwei Jahren vs. vor zwei Jahren': ['for two years and still continuing / two years ago', 'seit zwei Jahren / vor zwei Jahren'],
+      'ab 4 Uhr': ["from 4 o’clock onward", 'ab 4 Uhr'],
+      'von 9 bis 5 Uhr': ["from 9 to 5 o’clock", 'von 9 bis 5 Uhr'],
+      'Which preposition goes with an exact clock time?': ['at an exact clock time', 'um · um 12 Uhr, um 8:30 Uhr, um Mitternacht'],
+      'Wo? vs. Wohin?': ['location / destination', 'Wo? / Wohin?'],
+      'What is “ins”?': ['into the (in + das)', 'ins · Ich gehe ins Café.'],
+      'What is “zum”?': ['to the (zu + dem)', 'zum · zum Arzt, zum Bahnhof, zum Einkaufen'],
+      'What happens to separable verbs in Präsens?': ['word order for a separable verb in the present tense', 'The prefix goes to the end: Ich kaufe heute ein.'],
+      'How do separable verbs usually form Partizip II?': ['the past participle of a separable verb', 'The ge- goes between prefix and stem: einkaufen → eingekauft.'],
+      'Basic Perfekt structure': ['the German present-perfect structure', 'haben/sein + Partizip II · Ich habe eingekauft. Wir sind gefahren.'],
+      'What is the verb-position rule after a time phrase?': ['word order after a time phrase', 'The conjugated verb stays in position 2: Nach dem Sport kaufe ich ein.'],
+      'Which case follows mit?': ['with, followed by the dative', 'mit + Dativ · mit meinem Chef, mit meiner Freundin'],
+      'Why “meinem Kollegen” in “Ich schreibe meinem Kollegen eine Mail”?': ['to my male colleague, as the recipient', 'meinem Kollegen · The receiving person is in the dative.'],
+      'Which case follows nach?': ['after, followed by the dative', 'nach + Dativ · nach dem Sport, nach der Arbeit']
+    };
+    function firstEnglishClue(text){
+      const value=String(text||'').trim();
+      const perfektIndex=value.search(/;\s*Perfekt:/i);
+      const withoutPerfekt=perfektIndex>=0 ? value.slice(0,perfektIndex) : value;
+      const sentenceEnd=withoutPerfekt.indexOf('.');
+      return (sentenceEnd>=0 ? withoutPerfekt.slice(0,sentenceEnd) : withoutPerfekt).trim();
+    }
+    function flashcardSides(card){
+      if(typeof card.english==='string' && typeof card.german==='string'){
+        return {question:card.english, answer:card.german};
+      }
+      const rawFront=String(card.front||'').trim();
+      const rawBack=String(card.back||'').trim();
+      const core=coreFlashcardSides[rawFront];
+      if(core) return {question:core[0], answer:core[1]};
+      if(card.pack==='goethe-a1-verbs'){
+        const verb=rawFront.split(/\s+—\s+/)[0].trim();
+        const perfektMatch=rawBack.match(/;\s*Perfekt:\s*(.+)$/i);
+        return {
+          question:firstEnglishClue(rawBack),
+          answer:verb+(perfektMatch ? ' · Perfekt: '+perfektMatch[1].trim() : '')
+        };
+      }
+      const exampleIndex=rawBack.indexOf('Example:');
+      const example=exampleIndex>=0 ? rawBack.slice(exampleIndex+'Example:'.length).trim() : '';
+      return {
+        question:firstEnglishClue(rawBack),
+        answer:rawFront+(example ? ' · '+example : '')
+      };
+    }
     function quizKey(kind, q){
       return kind + ':' + hashText((q.type||'') + '|' + (q.question||'') + '|' + (q.answer||''));
     }
@@ -739,15 +812,32 @@
       $('#flashAnswer').classList.add('hidden');
       $('#toggleFlashAnswer').textContent='Show answer';
     }
+    function renderFlashHistory(key){
+      const stat=state.itemStats[key] || {attempts:0,correct:0};
+      const pastAttempts=safeInt(stat.attempts);
+      const pastCorrect=Math.min(pastAttempts,safeInt(stat.correct));
+      const pastWrong=pastAttempts-pastCorrect;
+      const correctWidth=pastAttempts ? pastCorrect/pastAttempts*100 : 0;
+      const wrongWidth=pastAttempts ? pastWrong/pastAttempts*100 : 0;
+      const summary=pastAttempts ? pastAttempts+' '+(pastAttempts===1?'try':'tries')+' · '+Math.round(correctWidth)+'% correct' : 'No tries yet';
+      $('#flashHistorySummary').textContent=summary;
+      $('#flashCorrectCount').textContent=pastCorrect+' correct';
+      $('#flashWrongCount').textContent=pastWrong+' incorrect';
+      $('#flashCorrectBar').style.width=correctWidth+'%';
+      $('#flashWrongBar').style.width=wrongWidth+'%';
+      $('#flashHistoryBar').setAttribute('aria-label',pastAttempts ? pastCorrect+' correct and '+pastWrong+' incorrect out of '+pastAttempts+' past tries' : 'No tries yet');
+    }
     function showFlash(){
       if(!flashOrder.length){ showCompletion(); return; }
       hideCompletion();
       index=Math.max(0,Math.min(index,flashOrder.length-1));
       const c=DATA.flashcards[flashOrder[index]];
       const key=flashKey(c);
-      $('#flashQuestion').textContent=c.front;
-      $('#flashAnswer').textContent=c.back;
+      const sides=flashcardSides(c);
+      $('#flashQuestion').textContent=sides.question;
+      $('#flashAnswerText').textContent=sides.answer;
       hideFlashAnswer();
+      renderFlashHistory(key);
       const streak=(state.itemStats[key]&&state.itemStats[key].correctStreak)||0;
       $('#knowFlash').textContent=isLearnedKey(key) ? 'Learned ✓' : 'I know this ('+streak+'/3)';
       $('#progress').textContent=(index+1)+' / '+flashOrder.length;
