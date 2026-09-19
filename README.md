@@ -12,6 +12,7 @@ The current data includes a complete Goethe-based adult A1 verb pack.
 - `menschen-lessons-15-17.js` — original vocabulary, grammar, and sentence practice aligned to lessons 15–17
 - `menschen-lesson-18.js` — original vocabulary, grammar, and sentence practice aligned to lesson 18
 - `menschen-lessons-19-20.js` — original vocabulary, grammar, and sentence practice aligned to lessons 19–20
+- `menschen-lessons-21-24.js` — original vocabulary, grammar, and sentence practice aligned to lessons 21–24
 - `menschen-gap-texts-15-24.js` — gap-fill sentences, messages, and e-mails for lessons 15–24
 - `A1_VERBS.md` — human-readable A1 verb list
 
@@ -34,10 +35,10 @@ reproductions of textbook exercises:
 - Lesson 18: body parts, illness and the doctor, advice with `sollen`, the formal imperative, and dative pronouns
 - Lesson 19: describing people, past forms of `sein`/`haben`, `un-` adjectives, and inseparable Perfekt forms
 - Lesson 20: household chores, `du`/`ihr` imperatives, polite requests, and accusative versus dative pronouns
-- Lesson 21: traffic and rules with `dürfen` and `müssen` (gap texts only so far)
-- Lesson 22: clothing, colours, and comparisons with `als`/`wie` (gap texts only so far)
-- Lesson 23: weather, seasons, and wishes with `würde` (gap texts only so far)
-- Lesson 24: celebrations, dates with ordinal numbers, and invitations (gap texts only so far)
+- Lesson 21: traffic, means of transport, directions, and rules with `dürfen` and `müssen`
+- Lesson 22: clothing, comparatives and superlatives, `als`/`wie`, and demonstrative `der`/`das`/`die`
+- Lesson 23: weather, seasons, points of the compass, and wishes with `würde`
+- Lesson 24: celebrations, dates with ordinal numbers, `schenken`/`gratulieren` with dative, and invitations
 
 ## Gap-fill sentences and e-mails
 
