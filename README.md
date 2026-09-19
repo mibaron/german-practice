@@ -12,7 +12,7 @@ The current data includes a complete Goethe-based adult A1 verb pack.
 - `menschen-lessons-15-17.js` — original vocabulary, grammar, and sentence practice aligned to lessons 15–17
 - `menschen-lesson-18.js` — original vocabulary, grammar, and sentence practice aligned to lesson 18
 - `menschen-lessons-19-20.js` — original vocabulary, grammar, and sentence practice aligned to lessons 19–20
-- `menschen-gap-texts-16-20.js` — gap-fill sentences, messages, and e-mails for lessons 16–20
+- `menschen-gap-texts-15-20.js` — gap-fill sentences, messages, and e-mails for lessons 15–20
 - `A1_VERBS.md` — human-readable A1 verb list
 
 ## Practice-set filter

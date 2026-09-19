@@ -1,14 +1,64 @@
 (function () {
   'use strict';
 
-  // Gap-fill sentences, messages and e-mails for Menschen A1 lessons 16–20.
+  // Gap-fill sentences, messages and e-mails for Menschen A1 lessons 15–20.
   // Each gap is written as [answer|hint]. The app renders one input per gap
   // and shows the hint only on hover or click.
 
-  const PACK_ID = 'menschen-a1-gap-texts-16-20';
+  const PACK_ID = 'menschen-a1-gap-texts-15-20';
 
   const lessons = {
+    15: [
+      {type: 'Gap fill', question: 'Describe your neighbourhood. Fill the gaps.',
+        text: 'Mein Stadtviertel [gefällt|gefallen, singular subject] mir sehr: Es gibt einen Park, zwei Kinos und viele kleine [Läden|shops, plural].',
+        explanation: 'The thing you like is the subject of gefallen; the person is dative.'},
+      {type: 'Gap fill', question: 'The view from the window. Fill the gaps.',
+        text: 'Der Blick aus dem Fenster [gefällt|gefallen] [uns|wir → dative] gut, man sieht die Berge und den [See|lake].',
+        explanation: 'Wir becomes uns in the dative.'},
+      {type: 'Gap fill', question: 'Whose bike is it? Fill the gaps.',
+        text: 'Wem [gehört|gehören] das Fahrrad vor der Werkstatt? – Es gehört [meinem|mein → dative, masculine] Nachbarn.',
+        explanation: 'Gehören takes dative; Nachbar adds -n in the dative.'},
+      {type: 'Gap fill', question: 'Help the tourists. Fill the gaps.',
+        text: 'Die Touristen suchen die Jugendherberge. Kannst du [ihnen|sie (plural) → dative] [helfen|to help]?',
+        explanation: 'Helfen takes dative; plural sie becomes ihnen.'},
+      {type: 'Gap fill', question: 'City or countryside? Fill the gaps.',
+        text: 'Auf dem Land ist das Leben [ruhig|quiet], in der Stadt ist es [lebendig|lively]. Beides gefällt [ihr|sie (singular) → dative].',
+        explanation: 'Singular sie becomes ihr in the dative.'},
+      {type: 'Gap fill', question: 'Nature around the village. Fill the gaps.',
+        text: 'Hinter dem Dorf beginnt ein [Wald|forest] und durch die Stadt [fließt|fließen] ein Fluss.',
+        explanation: 'Fließen keeps ie in the third person: fließt.'},
+      {type: 'Gap fill', question: 'Thank a friend for a tip. Fill the gaps.',
+        text: 'Ich danke [dir|du → dative] für den Tipp: Die Kneipe am Markt [gefällt|gefallen] [mir|ich → dative] wirklich gut.',
+        explanation: 'Danken and gefallen both take a dative person.'},
+      {type: 'Text', question: 'Complete the blog post about a favourite neighbourhood.',
+        text: 'Mein Lieblingsviertel\n\nIch wohne seit drei Jahren in Giesing und das Viertel [gefällt|gefallen] mir jeden Tag mehr. Morgens kaufe ich Brot beim Bäcker, der Laden gehört [einer|eine → dative] netten Familie. Am Nachmittag sitze ich gern [im|in + dem] Park und abends treffe ich meine Freunde in der [Kneipe|pub]. Viele Einwohner sagen: Hier ist das Leben [lebendig|lively], aber nicht zu laut. Schreibt [mir|ich → dative] einen Kommentar: Wie gefällt [euch|ihr → dative] euer Viertel?',
+        explanation: 'Gehören and gefallen take dative: einer Familie, mir, euch.'},
+      {type: 'E-mail', question: 'Complete the e-mail about the new flat.',
+        text: 'Hallo Jana,\n\nwir sind jetzt in unserer neuen Wohnung in Hamburg. Das Viertel gefällt [uns|wir → dative] sehr gut. Aus dem Fenster [sehen|sehen, wir-Form] wir den Fluss und einen kleinen Park. Neben dem Haus gibt es einen [Kindergarten|kindergarten] für Leo und einen Friseur. Nur der Lärm von der Straße gefällt Tom [nicht|negation]. Komm uns bald besuchen, die Jugendherberge [liegt|liegen] direkt am See!\n\nLiebe Grüße\nMia',
+        explanation: 'Es gibt takes accusative: einen Kindergarten; nicht stands at the end.'}
+    ],
     16: [
+      {type: 'Gap fill', question: 'Check in at the hotel. Fill the gaps.',
+        text: 'Guten Tag, ich habe eine [Reservierung|reservation] auf den Namen Krüger, ein Einzelzimmer für drei [Nächte|nights, plural].',
+        explanation: 'Für + accusative gives the length of the stay.'},
+      {type: 'Gap fill', question: 'Ask for the Wi-Fi. Fill the gaps.',
+        text: 'Das WLAN im Zimmer ist sehr langsam. Wie ist das [Passwort|password]? – Es [steht|stehen] auf Ihrer Schlüsselkarte.',
+        explanation: 'Stehen is used for text written somewhere.'},
+      {type: 'Gap fill', question: 'Complain about noise. Fill the gaps.',
+        text: 'Entschuldigung, im Nachbarzimmer [läuft|laufen] laute Musik. Der Lärm [stört|stören] mich, ich kann nicht [schlafen|to sleep].',
+        explanation: 'Laufen changes a to äu: läuft; the infinitive follows kann at the end.'},
+      {type: 'Gap fill', question: 'When does the caretaker come? Fill the gaps.',
+        text: '[Wann|question word: when] kommt der Hausmeister? – Er [kommt|kommen] übermorgen vorbei, [vor|preposition: before] dem Mittagessen.',
+        explanation: 'Vor + dative: vor dem Mittagessen.'},
+      {type: 'Gap fill', question: 'Apologise for being late. Fill the gaps.',
+        text: 'Es tut mir leid, ich [habe|haben] mich [verspätet|sich verspäten, participle]. Der Bus hatte zwanzig Minuten [Verspätung|delay].',
+        explanation: 'Sich verspäten forms the Perfekt with haben.'},
+      {type: 'Gap fill', question: 'Find a time for an appointment. Fill the gaps.',
+        text: 'Haben Sie am Dienstag [um|preposition: clock time] zehn Uhr Zeit? – Nein, aber [am|an + dem] Mittwoch [passt|passen] es mir gut.',
+        explanation: 'Um for clock times, am for days.'},
+      {type: 'Message', question: 'Complete the voicemail from the lift company.',
+        text: 'Guten Tag Frau Weber, hier ist die Aufzugfirma Meier. Wir [kümmern|sich kümmern] uns heute [um|preposition] das Problem mit dem Lift. Unser Techniker kommt [in|preposition: future point in time] einer Stunde [vorbei|vorbeikommen]. Die Reparatur [dauert|dauern] ungefähr zwei Stunden. Bitte [sagen|Bescheid sagen, Sie-imperative] Sie uns Bescheid, wenn das nicht [passt|passen]. Auf Wiederhören!',
+        explanation: 'Sich kümmern um + accusative; in + dative for a future time.'},
       {type: 'Gap fill', question: 'A guest reports a problem. Fill the gaps.',
         text: 'Der Aufzug [funktioniert|funktionieren] nicht und wir [stecken|feststecken] im dritten Stock [fest|separable prefix].',
         explanation: 'Feststecken separates in the present tense: stecken … fest.'},
@@ -38,6 +88,27 @@
         explanation: 'Separable verbs split in main clauses and in the formal imperative: kommt … vorbei, rufen Sie … an.'}
     ],
     17: [
+      {type: 'Gap fill', question: 'Dream job. Fill the gaps.',
+        text: 'Was [willst|wollen, du-Form] du später werden? – Ich [werde|werden, ich-Form] Ärztin, das ist mein [Traumberuf|dream job].',
+        explanation: 'Werden + profession without an article.'},
+      {type: 'Gap fill', question: 'Why training first? Fill the gaps.',
+        text: 'Ohne [Abschluss|qualification] bekommt man keine gute Stelle, deshalb [macht|machen] er zuerst eine Ausbildung.',
+        explanation: 'After deshalb the verb comes right away: deshalb macht er.'},
+      {type: 'Gap fill', question: 'The band on Saturday. Fill the gaps.',
+        text: 'Die Band [tritt|auftreten] am Samstag im Jugendzentrum [auf|separable prefix] und [will|wollen, singular subject] danach ein Lied aufnehmen.',
+        explanation: 'Auftreten separates: tritt … auf.'},
+      {type: 'Gap fill', question: 'Won and failed. Fill the gaps.',
+        text: 'Lisa hat den Wettbewerb [gewonnen|gewinnen, participle], aber ihr Bruder ist bei der Prüfung [durchgefallen|durchfallen, participle].',
+        explanation: 'Gewonnen with haben, durchgefallen with sein.'},
+      {type: 'Gap fill', question: 'Getting to university. Fill the gaps.',
+        text: 'Ich fahre [mit|with] dem Zug zur Universität, [ohne|without] Auto ist das kein Problem.',
+        explanation: 'Mit + dative, ohne + accusative.'},
+      {type: 'Gap fill', question: 'Starting a band. Fill the gaps.',
+        text: '[Wollt|wollen, ihr-Form] ihr eine Band [gründen|to found]? Dann [übt|üben, ihr-imperative] jeden Tag zusammen.',
+        explanation: 'The ihr form of wollen is wollt; the ihr imperative is übt.'},
+      {type: 'E-mail', question: 'Complete the reply from the music school.',
+        text: 'Liebe Frau Hoffmann,\n\nvielen Dank für Ihre [Bewerbung|application]. Wir laden Sie zur Aufnahmeprüfung am 12. Mai [ein|einladen, separable prefix]. Bitte [bringen|mitbringen, Sie-imperative] Sie Ihre Gitarre und zwei Lieder [mit|separable prefix]. Die Prüfung [dauert|dauern] ungefähr eine Stunde. Wenn Sie die Prüfung [bestehen|to pass], [bekommen|bekommen, Sie-Form] Sie im September einen Studienplatz.\n\nMit freundlichen Grüßen\nMusikschule Nord',
+        explanation: 'Einladen and mitbringen separate; after a wenn clause the main verb comes first.'},
       {type: 'Gap fill', question: 'Talk about a dream job. Fill the gaps.',
         text: 'Ich [will|wollen, ich-Form] unbedingt Sängerin [werden|to become] und [bewerbe|sich bewerben] mich [um|preposition] einen Platz an der Musikschule.',
         explanation: 'Wollen + infinitive at the end; sich bewerben um + accusative.'},
@@ -64,6 +135,27 @@
         explanation: 'Bekommen keeps the same form as its participle; mit mir (dative), ohne dich (accusative).'}
     ],
     18: [
+      {type: 'Gap fill', question: 'Should I see a doctor? Fill the gaps.',
+        text: 'Ich habe seit drei Tagen [Husten|cough] und [Schnupfen|runny nose]. [Soll|sollen, ich-Form] ich zum Arzt gehen?',
+        explanation: 'Soll ich …? asks for advice.'},
+      {type: 'Gap fill', question: 'At the examination. Fill the gaps.',
+        text: 'Die Ärztin [untersucht|untersuchen] den Patienten und [misst|messen] Fieber: 39 Grad!',
+        explanation: 'Messen changes e to i: misst.'},
+      {type: 'Gap fill', question: 'At the pharmacy. Fill the gaps.',
+        text: 'Haben Sie etwas [gegen|preposition: against] Zahnschmerzen? – Nehmen Sie diese Tabletten, aber [gehen|gehen, Sie-imperative] Sie morgen zum [Zahnarzt|dentist].',
+        explanation: 'Gegen + accusative; formal imperative: gehen Sie.'},
+      {type: 'Gap fill', question: 'The knee. Fill the gaps.',
+        text: 'Tut [dir|du → dative] das Knie noch weh? – Ja, ich [soll|sollen, ich-Form] zwei Wochen keinen Sport [machen|to do].',
+        explanation: 'Wehtun takes a dative person; the infinitive stands at the end.'},
+      {type: 'Gap fill', question: 'Exercise or rest? Fill the gaps.',
+        text: 'Bewegung ist [gesund|healthy], aber bei Fieber [sollst|sollen, du-Form] du dich [ausruhen|to rest].',
+        explanation: 'Sich ausruhen stays together after sollst.'},
+      {type: 'Gap fill', question: 'The doctor\'s rules. Fill the gaps.',
+        text: '[Trinken|trinken, Sie-imperative] Sie keinen Kaffee und [rauchen|rauchen, Sie-imperative] Sie nicht, dann wird der Hals schnell wieder [gesund|healthy].',
+        explanation: 'Formal imperatives: Trinken Sie, rauchen Sie.'},
+      {type: 'Message', question: 'Complete the message to a colleague.',
+        text: 'Hallo Nadia,\n\nmir geht es heute gar nicht gut: Mein Rücken [tut|wehtun] seit dem Wochenende [weh|separable part of wehtun] und ich habe Kopfschmerzen. Der Arzt hat [mir|ich → dative] eine Salbe [empfohlen|empfehlen, participle] und sagt, ich [soll|sollen, ich-Form] zwei Tage zu Hause bleiben. Kannst du [mich|ich → accusative] bitte beim Chef [entschuldigen|to excuse]? Danke [dir|du → dative]!\n\nOmar',
+        explanation: 'Empfehlen forms the participle empfohlen; entschuldigen takes accusative.'},
       {type: 'Gap fill', question: 'Describe your symptoms. Fill the gaps.',
         text: 'Mein Kopf [tut|wehtun] seit gestern [weh|separable part of wehtun] und ich habe auch [Halsschmerzen|sore throat].',
         explanation: 'Wehtun separates: tut … weh.'},
@@ -90,6 +182,27 @@
         explanation: 'Sollen gives advice; the du imperative has no pronoun and no ending: mach, geh.'}
     ],
     19: [
+      {type: 'Gap fill', question: 'The woman with the glasses. Fill the gaps.',
+        text: 'Kennst du die Frau mit der [Brille|glasses]? – Ja, das ist Eva. Früher [hatte|haben, Präteritum] sie keine Brille und [war|sein, Präteritum] rothaarig.',
+        explanation: 'Hatte for having, war for being.'},
+      {type: 'Gap fill', question: 'Dad on an old photo. Fill the gaps.',
+        text: 'Auf dem Foto [sieht|aussehen] mein Vater sehr jung [aus|separable prefix]. Er [hatte|haben, Präteritum] damals lange Haare und einen Bart.',
+        explanation: 'Aussehen separates: sieht … aus.'},
+      {type: 'Gap fill', question: 'The new colleague. Fill the gaps.',
+        text: 'Der neue Kollege wirkt [sympathisch|likable] und lustig, aber sein Chef ist ziemlich [unfreundlich|opposite of freundlich].',
+        explanation: 'Un- makes the opposite: unfreundlich.'},
+      {type: 'Gap fill', question: 'Shy children. Fill the gaps.',
+        text: 'Wir [waren|sein, Präteritum, wir-Form] als Kinder sehr schüchtern. [Hattet|haben, Präteritum, ihr-Form] ihr damals auch wenig Freunde?',
+        explanation: 'Waren for wir, hattet for ihr.'},
+      {type: 'Gap fill', question: 'A mix-up. Fill the gaps.',
+        text: 'Entschuldigung, ich habe Sie [verwechselt|verwechseln, participle]. Sie [sehen|aussehen, Sie-Form] aus wie meine Nachbarin!',
+        explanation: 'Verwechselt has no ge-; aussehen wie compares appearance.'},
+      {type: 'Gap fill', question: 'Do you remember? Fill the gaps.',
+        text: 'Erinnerst du [dich|reflexive pronoun, du] an Herrn Koch? Er hat uns damals Mathe [erklärt|erklären, participle] und wir haben nichts [verstanden|verstehen, participle].',
+        explanation: 'Erklärt and verstanden have no ge-.'},
+      {type: 'E-mail', question: 'Complete the e-mail after the class reunion.',
+        text: 'Liebe alle,\n\nunser Klassentreffen war toll! Ich habe viele von euch zuerst nicht [erkannt|erkennen, participle]. Peter [hatte|haben, Präteritum] früher lange Haare, heute hat er eine [Glatze|bald head]. Und Anna [war|sein, Präteritum] damals so schüchtern, jetzt ist sie Sängerin und sehr [erfolgreich|successful]! Nur unser Lehrer hat sich nicht [verändert|verändern, participle]: Er [war|sein, Präteritum] und ist immer freundlich. Die Fotos [schicke|schicken] ich euch morgen.\n\nLiebe Grüße\nSofia',
+        explanation: 'Contrast früher with heute using hatte and war.'},
       {type: 'Gap fill', question: 'Describe grandpa in the past. Fill the gaps.',
         text: 'Früher [hatte|haben, Präteritum] mein Opa einen Schnurrbart und [war|sein, Präteritum] sehr schlank.',
         explanation: 'Hatte for possession, war for a state.'},
@@ -116,6 +229,27 @@
         explanation: 'Erkannt and verwechselt have no ge-; the Sie forms are hatten and waren.'}
     ],
     20: [
+      {type: 'Gap fill', question: 'Table and window. Fill the gaps.',
+        text: '[Deck|decken, du-imperative] bitte den Tisch und [mach|zumachen, du-imperative] das Fenster [zu|separable prefix], es ist kalt.',
+        explanation: 'Du imperatives use the stem; zu goes to the end.'},
+      {type: 'Gap fill', question: 'Dishwasher and laundry. Fill the gaps.',
+        text: 'Die Spülmaschine ist voll. [Räumt|ausräumen, ihr-imperative] sie bitte [aus|separable prefix] und [hängt|aufhängen, ihr-imperative] die Wäsche auf.',
+        explanation: 'Ihr imperatives: räumt … aus, hängt … auf.'},
+      {type: 'Gap fill', question: 'Party and pick-up. Fill the gaps.',
+        text: 'Miriam lädt [uns|wir → accusative] zur Grillparty ein. Holst du [sie|sie (singular) → accusative] vom Bahnhof ab?',
+        explanation: 'Einladen and abholen take accusative: uns, sie.'},
+      {type: 'Gap fill', question: 'Whose turn? Fill the gaps.',
+        text: 'Das Bad ist schmutzig und der Kühlschrank ist [leer|empty]. Wer [ist|sein] heute [dran|whose turn it is]?',
+        explanation: 'Dran sein uses sein.'},
+      {type: 'Gap fill', question: 'A friendly request. Fill the gaps.',
+        text: '[Sei|sein, du-imperative] bitte so lieb und [bring|rausbringen, du-imperative] die Flaschen [raus|separable prefix].',
+        explanation: 'The du imperative of sein is sei.'},
+      {type: 'Gap fill', question: 'Annoyed about the kitchen. Fill the gaps.',
+        text: 'Ich [ärgere|sich ärgern] mich über die Unordnung in der Küche. [Putzt|putzen, ihr-imperative] sie endlich!',
+        explanation: 'Sich ärgern über + accusative; ihr imperative putzt.'},
+      {type: 'Message', question: 'Complete the note on the fridge.',
+        text: 'Hi Paul,\n\nich komme erst um zehn nach Hause. [Kannst|können, du-Form] du bitte die Wäsche aus der Waschmaschine [nehmen|to take] und [aufhängen|to hang up]? [Vergiss|vergessen, du-imperative] auch den Müll nicht, der Mülleimer [stinkt|stinken] schon. Und [ruf|anrufen, du-imperative] [mich|ich → accusative] kurz [an|separable prefix], wenn der Grill nicht [funktioniert|funktionieren]. Danke, du bist der Beste!\n\nLena',
+        explanation: 'After a modal the infinitives stay at the end; vergiss and ruf … an are du imperatives.'},
       {type: 'Gap fill', question: 'Tell your brother what to do. Fill the gaps.',
         text: '[Räum|aufräumen, du-imperative] bitte dein Zimmer [auf|separable prefix] und [bring|rausbringen, du-imperative] den Müll [raus|separable prefix].',
         explanation: 'The du imperative uses the stem; separable prefixes go to the end.'},
@@ -157,7 +291,7 @@
   const pack = {
     meta: {
       id: PACK_ID,
-      title: 'Gap-fill sentences and e-mails for Menschen A1 lessons 16–20',
+      title: 'Gap-fill sentences and e-mails for Menschen A1 lessons 15–20',
       level: 'A1',
       version: 1,
       note: 'Original texts with [answer|hint] gaps; no textbook exercises are reproduced.'
@@ -167,7 +301,7 @@
     sentences
   };
 
-  window.GERMAN_MENSCHEN_GAP_TEXTS_16_20 = pack;
+  window.GERMAN_MENSCHEN_GAP_TEXTS_15_20 = pack;
 
   const data = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
   if (!data) return;
