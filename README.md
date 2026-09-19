@@ -10,6 +10,7 @@ The current data includes a complete Goethe-based adult A1 verb pack.
 - `a1-verbs.js` — modular A1 verbs, conjugations, Perfekt forms and exercises
 - `menschen-lessons-12-14.js` — original vocabulary and grammar practice aligned to lessons 12–14
 - `menschen-lessons-15-17.js` — original vocabulary, grammar, and sentence practice aligned to lessons 15–17
+- `menschen-lesson-18.js` — original vocabulary, grammar, and sentence practice aligned to lesson 18
 - `menschen-lessons-19-20.js` — original vocabulary, grammar, and sentence practice aligned to lessons 19–20
 - `A1_VERBS.md` — human-readable A1 verb list
 
@@ -27,10 +28,11 @@ reproductions of textbook exercises:
 - Lesson 13: places in town, directions, and local prepositions with dative
 - Lesson 14: homes and rooms, possessive articles, and genitive names
 - Lesson 15: neighborhoods, city and nature, and dative personal pronouns
-- Lesson 16: hotel problems, asking for help, appointments, and temporal prepositions
+- Lesson 16: hotel problems, asking for help, appointments, and temporal prepositions (`vor`, `nach`, `bei`, `in`, `für`)
 - Lesson 17: education and career plans, `mit`/`ohne`, `wollen`, and `werden`
-- Lesson 19: describing people, past forms of `sein`/`haben`, `un-`, and inseparable Perfekt forms
-- Lesson 20: household chores, imperatives, polite requests, and accusative pronouns
+- Lesson 18: body parts, illness and the doctor, advice with `sollen`, the formal imperative, and dative pronouns
+- Lesson 19: describing people, past forms of `sein`/`haben`, `un-` adjectives, and inseparable Perfekt forms
+- Lesson 20: household chores, `du`/`ihr` imperatives, polite requests, and accusative versus dative pronouns
 
 ## Flashcards
 
