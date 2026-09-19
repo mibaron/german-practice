@@ -149,6 +149,10 @@
           <option value="18">Lesson 18 · Health &amp; advice</option>
           <option value="19">Lesson 19 · Appearance &amp; past descriptions</option>
           <option value="20">Lesson 20 · Housework &amp; requests</option>
+          <option value="21">Lesson 21 · Traffic &amp; rules</option>
+          <option value="22">Lesson 22 · Clothing &amp; comparisons</option>
+          <option value="23">Lesson 23 · Weather &amp; wishes</option>
+          <option value="24">Lesson 24 · Celebrations &amp; invitations</option>
           <option value="other">Existing practice · other material</option>
         </select>
       </div>
@@ -389,7 +393,7 @@
   <script src="menschen-lessons-15-17.js"></script>
   <script src="menschen-lesson-18.js"></script>
   <script src="menschen-lessons-19-20.js"></script>
-  <script src="menschen-gap-texts-15-20.js"></script>
+  <script src="menschen-gap-texts-15-24.js"></script>
   <script>
   (() => {
     let DATA = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
@@ -411,7 +415,7 @@
       {label:'ihr', key:'ihr'}
     ];
     const modes = ['flash','verbs','grammar','sentences'];
-    const lessonFilters = ['all','12','13','14','15','16','17','18','19','20','other'];
+    const lessonFilters = ['all','12','13','14','15','16','17','18','19','20','21','22','23','24','other'];
     const lessonFilterLabels = {
       all: 'All practice',
       12: 'Lesson 12',
@@ -423,6 +427,10 @@
       18: 'Lesson 18',
       19: 'Lesson 19',
       20: 'Lesson 20',
+      21: 'Lesson 21',
+      22: 'Lesson 22',
+      23: 'Lesson 23',
+      24: 'Lesson 24',
       other: 'Existing practice'
     };
     const $ = s => document.querySelector(s);

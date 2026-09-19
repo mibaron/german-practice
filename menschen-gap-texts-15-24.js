@@ -1,11 +1,11 @@
 (function () {
   'use strict';
 
-  // Gap-fill sentences, messages and e-mails for Menschen A1 lessons 15–20.
+  // Gap-fill sentences, messages and e-mails for Menschen A1 lessons 15–24.
   // Each gap is written as [answer|hint]. The app renders one input per gap
   // and shows the hint only on hover or click.
 
-  const PACK_ID = 'menschen-a1-gap-texts-15-20';
+  const PACK_ID = 'menschen-a1-gap-texts-15-24';
 
   const lessons = {
     15: [
@@ -274,6 +274,134 @@
       {type: 'Message', question: 'Complete the voicemail.',
         text: 'Hallo Ben, hier ist Miriam. [Komm|kommen, du-imperative] heute Abend doch [rüber|rüberkommen, separable prefix], wir grillen im Garten. [Bring|mitbringen, du-imperative] bitte Brot und Salat [mit|separable prefix]. Kannst du [uns|wir → accusative] vorher kurz [anrufen|to call]? Und [beeil|sich beeilen, du-imperative] dich, der Grill wartet!',
         explanation: 'Separable verbs in the imperative: komm … rüber, bring … mit; anrufen takes accusative uns.'}
+    ],
+    21: [
+      {type: 'Gap fill', question: 'Traffic lights. Fill the gaps.',
+        text: 'Bei Rot [musst|müssen, du-Form] du stehen bleiben, bei Grün [darfst|dürfen, du-Form] du gehen.',
+        explanation: 'Müssen = have to, dürfen = be allowed to.'},
+      {type: 'Gap fill', question: 'Children on bikes. Fill the gaps.',
+        text: 'Hier [dürfen|dürfen, plural] Kinder nicht allein Rad fahren, sie [müssen|müssen, plural] einen Helm tragen.',
+        explanation: 'Plural forms: dürfen, müssen.'},
+      {type: 'Gap fill', question: 'Rules on the train. Fill the gaps.',
+        text: 'Im Zug [darf|dürfen, man] man nicht rauchen und man [muss|müssen, man] eine Fahrkarte kaufen.',
+        explanation: 'Man takes the third-person singular: darf, muss.'},
+      {type: 'Gap fill', question: 'Ask for the bus stop. Fill the gaps.',
+        text: 'Entschuldigung, wo ist die nächste [Haltestelle|bus stop]? – Gehen Sie geradeaus und dann [links|left] an der Ampel.',
+        explanation: 'Geradeaus, links and rechts give directions.'},
+      {type: 'Gap fill', question: 'Parking. Fill the gaps.',
+        text: '[Darf|dürfen, ich-Form] ich hier parken? – Nein, hier ist Parken [verboten|forbidden]. Sie [müssen|müssen, Sie-Form] zum Parkplatz fahren.',
+        explanation: 'Darf ich …? asks for permission.'},
+      {type: 'Gap fill', question: 'Getting to work. Fill the gaps.',
+        text: 'Ich fahre jeden Tag [mit|preposition: with a vehicle] dem Fahrrad zur Arbeit, das ist schneller [als|comparison word] der Bus.',
+        explanation: 'Mit + dative for vehicles; schneller als compares.'},
+      {type: 'Gap fill', question: 'Driving licence. Fill the gaps.',
+        text: 'Der Führerschein ist wichtig: Ohne Führerschein [darfst|dürfen, du-Form] du kein Auto fahren.',
+        explanation: 'Nicht dürfen means to be forbidden.'},
+      {type: 'Gap fill', question: 'Pedestrians and drivers. Fill the gaps.',
+        text: 'Fußgänger [müssen|müssen, plural] den Zebrastreifen benutzen und Autofahrer müssen dort [anhalten|to stop (a vehicle)].',
+        explanation: 'The infinitive anhalten stands at the end after müssen.'},
+      {type: 'Text', question: 'Complete the rules of the bike rental.',
+        text: 'Fahrradverleih am Bahnhof – Regeln\n\nSie [dürfen|dürfen, Sie-Form] das Fahrrad bis 20 Uhr benutzen und [müssen|müssen, Sie-Form] es danach zurückbringen. Kinder unter zwölf Jahren [dürfen|dürfen, plural] nur mit Eltern fahren. Bitte [tragen|tragen, Sie-imperative] Sie in der Stadt einen [Helm|helmet] und [fahren|fahren, Sie-imperative] Sie nicht auf dem Gehweg. Bei einem Problem [rufen|anrufen, Sie-imperative] Sie uns bitte [an|separable prefix].',
+        explanation: 'Formal imperatives: tragen Sie, fahren Sie, rufen Sie … an.'},
+      {type: 'Message', question: 'Complete the message about a closed road.',
+        text: 'Hallo Tim,\n\nich komme heute später. Die Straße am Markt ist [gesperrt|closed (road)] und der Bus [fährt|fahren] eine andere Strecke. Ich [muss|müssen, ich-Form] jetzt zu Fuß gehen. [Darf|dürfen, ich-Form] ich mein Fahrrad morgen bei dir [abstellen|to park (a bike)]?\n\nBis gleich!\nNina',
+        explanation: 'Fahren changes a to ä: fährt; Darf ich …? asks for permission.'}
+    ],
+    22: [
+      {type: 'Gap fill', question: 'Which one do you like better? Fill the gaps.',
+        text: 'Der blaue Pullover ist schön, aber der rote gefällt mir [besser|gut → comparative]. Am [besten|gut → superlative] gefällt mir die Jacke.',
+        explanation: 'Gut, besser, am besten.'},
+      {type: 'Gap fill', question: 'Jeans or dresses? Fill the gaps.',
+        text: 'Ich trage gern Jeans, aber im Sommer trage ich [lieber|gern → comparative] Kleider.',
+        explanation: 'Gern, lieber, am liebsten.'},
+      {type: 'Gap fill', question: 'Shoes and boots. Fill the gaps.',
+        text: 'Diese Schuhe sind [teurer|teuer → comparative] als die Stiefel, aber sie sind auch [bequemer|bequem → comparative].',
+        explanation: 'Teuer loses its e in the comparative: teurer.'},
+      {type: 'Gap fill', question: 'Compare with als and wie. Fill the gaps.',
+        text: 'Mein Bruder ist [größer|groß → comparative] [als|comparison word: than] ich, aber ich bin genauso [sportlich|sporty] [wie|comparison word: as] er.',
+        explanation: 'Comparative + als; genauso … wie for equality.'},
+      {type: 'Gap fill', question: 'Choose a shirt. Fill the gaps.',
+        text: 'Welches Hemd nimmst du? – [Das|demonstrative: that one (neuter)] hier, das ist am [billigsten|billig → superlative].',
+        explanation: 'Der, das, die can stand alone as demonstratives; am billigsten is the superlative.'},
+      {type: 'Gap fill', question: 'In the shop. Fill the gaps.',
+        text: 'Die Hose ist zu [eng|tight], haben Sie sie auch in [Größe|size] 40?',
+        explanation: 'Zu + adjective means too.'},
+      {type: 'Gap fill', question: 'Winter clothes. Fill the gaps.',
+        text: 'Im Winter trage ich einen Mantel, einen [Schal|scarf] und [Handschuhe|gloves].',
+        explanation: 'Tragen takes accusative: einen Mantel, einen Schal.'},
+      {type: 'Gap fill', question: 'Favourite food. Fill the gaps.',
+        text: 'Ich esse gern Pizza, aber [am|superlative marker] [liebsten|gern → superlative] esse ich Nudeln.',
+        explanation: 'The superlative of gern is am liebsten.'},
+      {type: 'Text', question: 'Complete the online review of a jacket.',
+        text: 'Bewertung: Jacke „Nordwind“\n\nDie Jacke ist [wärmer|warm → comparative] als meine alte und sieht auch [besser|gut → comparative] aus. Die Farbe ist [dunkelblau|dark blue], im Internet war sie etwas [heller|hell → comparative]. Die Größe M passt mir gut, aber die Ärmel sind ein bisschen zu [lang|long]. Am [besten|gut → superlative] gefallen mir die vielen Taschen. Ich trage sie [lieber|gern → comparative] als meinen Mantel.',
+        explanation: 'Comparatives with umlaut: wärmer; irregular: besser, lieber.'},
+      {type: 'Message', question: 'Complete the message about what to wear.',
+        text: 'Hallo Sara,\n\nwas soll ich zur Party anziehen? Das grüne Kleid ist [schöner|schön → comparative] als das schwarze, aber das schwarze ist [eleganter|elegant → comparative]. Und welche Schuhe? [Die|demonstrative: those (plural)] mit den hohen Absätzen sind [unbequem|uncomfortable]. Am [liebsten|gern → superlative] würde ich Sneaker tragen. Was meinst du?\n\nLea',
+        explanation: 'Comparative + als; die as a demonstrative for plural Schuhe.'}
+    ],
+    23: [
+      {type: 'Gap fill', question: 'North and south. Fill the gaps.',
+        text: 'Im Norden [regnet|regnen] es heute, im Süden [scheint|scheinen] die Sonne.',
+        explanation: 'Weather verbs: es regnet, die Sonne scheint.'},
+      {type: 'Gap fill', question: 'Take an umbrella. Fill the gaps.',
+        text: 'Es ist kalt und [windig|windy], nimm bitte einen [Schirm|umbrella] mit.',
+        explanation: 'Mitnehmen separates in the imperative: nimm … mit.'},
+      {type: 'Gap fill', question: 'Winter in Austria. Fill the gaps.',
+        text: 'Wie ist das Wetter [im|in + dem] Winter in Österreich? – Es [schneit|schneien] oft und es gibt viel Schnee in den Bergen.',
+        explanation: 'Seasons take im; es schneit means it snows.'},
+      {type: 'Gap fill', question: 'A wish for bad weather. Fill the gaps.',
+        text: 'Bei diesem Wetter [würde|würden, ich-Form] ich am liebsten im Bett bleiben.',
+        explanation: 'Würde + infinitive at the end expresses a wish.'},
+      {type: 'Gap fill', question: 'What would you do? Fill the gaps.',
+        text: 'Was [würdest|würden, du-Form] du bei Regen machen? – Ich [würde|würden, ich-Form] ins Kino gehen.',
+        explanation: 'Würden: ich würde, du würdest.'},
+      {type: 'Gap fill', question: 'Seasons. Fill the gaps.',
+        text: 'Im [Frühling|spring] blühen die Blumen, im [Herbst|autumn] fallen die Blätter.',
+        explanation: 'Frühling, Sommer, Herbst, Winter.'},
+      {type: 'Gap fill', question: 'A cold morning. Fill the gaps.',
+        text: 'Die Temperatur liegt heute bei minus fünf [Grad|degrees], es ist [neblig|foggy] und glatt.',
+        explanation: 'Grad is used for temperatures.'},
+      {type: 'Gap fill', question: 'A trip to Italy. Fill the gaps.',
+        text: 'Wir [würden|würden, wir-Form] gern nach Italien fahren, dort ist es im Mai schon [warm|warm].',
+        explanation: 'Würden gern expresses a wish politely.'},
+      {type: 'Text', question: 'Complete the weather report.',
+        text: 'Das Wetter am Wochenende\n\nAm Samstag ist es im Westen [bewölkt|cloudy] und es [regnet|regnen] bis zum Mittag. Im Osten [scheint|scheinen] die Sonne bei 22 [Grad|degrees]. Am Sonntag wird es überall [sonnig|sunny] und [trocken|dry], aber in den Bergen ist es nachts noch [kalt|cold]. Wer wandern möchte, [soll|sollen] warme Kleidung mitnehmen.',
+        explanation: 'Weather adjectives: bewölkt, sonnig, trocken; points of the compass take im.'},
+      {type: 'E-mail', question: 'Complete the e-mail about the weather.',
+        text: 'Hallo Jonas,\n\nwie ist das Wetter bei euch? Hier in Hamburg [regnet|regnen] es seit drei Tagen und es ist sehr [windig|windy]. Ich [würde|würden, ich-Form] so gern in den Süden fahren! [Würdest|würden, du-Form] du mitkommen? Im Juni ist es in Spanien schon [heiß|hot], wir könnten jeden Tag am Meer sein. Schreib mir, was du [meinst|meinen].\n\nLiebe Grüße\nPia',
+        explanation: 'Würde + infinitive for wishes; the present tense with seit.'}
+    ],
+    24: [
+      {type: 'Gap fill', question: 'A picnic on 1 May. Fill the gaps.',
+        text: 'Am [ersten|1st → ordinal number] Mai machen wir ein Picknick. Kommst du? – Ja, [gern|gladly]!',
+        explanation: 'Dates: am ersten Mai.'},
+      {type: 'Gap fill', question: 'Birthday wishes. Fill the gaps.',
+        text: 'Herzlichen [Glückwunsch|congratulations] zum Geburtstag! Ich [wünsche|wünschen, ich-Form] dir alles Gute.',
+        explanation: 'Herzlichen Glückwunsch is the fixed phrase.'},
+      {type: 'Gap fill', question: 'When is your birthday? Fill the gaps.',
+        text: 'Wann hast du Geburtstag? – Am [dritten|3rd → ordinal number] Oktober. Und du? – Am [zwanzigsten|20th → ordinal number] Juni.',
+        explanation: 'Ordinals: dritten, zwanzigsten after am.'},
+      {type: 'Gap fill', question: 'A present for mum. Fill the gaps.',
+        text: 'Ich [schenke|schenken] meiner Mutter Blumen und [lade|einladen] sie zum Essen [ein|separable prefix].',
+        explanation: 'Schenken takes dative person + accusative thing; einladen separates.'},
+      {type: 'Gap fill', question: 'Party at home. Fill the gaps.',
+        text: 'Wir [feiern|feiern] am Samstag in unserer Wohnung. [Bringt|mitbringen, ihr-imperative] bitte etwas zu trinken [mit|separable prefix].',
+        explanation: 'Ihr imperative: bringt … mit.'},
+      {type: 'Gap fill', question: 'Decline an invitation. Fill the gaps.',
+        text: 'Vielen Dank für die [Einladung|invitation]! Leider [kann|können, ich-Form] ich nicht kommen, ich bin am Wochenende nicht da.',
+        explanation: 'Leider kann ich nicht kommen is a polite refusal.'},
+      {type: 'Gap fill', question: 'Celebrating every day. Fill the gaps.',
+        text: 'Ich [würde|würden, ich-Form] am liebsten jeden Tag [feiern|to celebrate], aber am Montag muss ich arbeiten.',
+        explanation: 'Würde + infinitive at the end.'},
+      {type: 'Gap fill', question: 'Before the party. Fill the gaps.',
+        text: 'Das Fest beginnt um acht [Uhr|o’clock]. [Zieh|anziehen, du-imperative] dir etwas Schönes [an|separable prefix]!',
+        explanation: 'Sich anziehen with dative dir: Zieh dir … an.'},
+      {type: 'E-mail', question: 'Complete the birthday invitation.',
+        text: 'Liebe Freunde,\n\nam [fünfzehnten|15th → ordinal number] Juli werde ich dreißig und das [möchte|möchten, ich-Form] ich mit euch feiern! Die Party beginnt um 19 Uhr in unserem Garten, wir [grillen|to barbecue] und tanzen. Bitte [sagt|Bescheid sagen, ihr-imperative] mir bis zum zehnten Juli Bescheid. [Bringt|mitbringen, ihr-imperative] gute Laune [mit|separable prefix], Geschenke braucht ihr nicht. Ich [freue|sich freuen] mich auf euch!\n\nEuer Jan',
+        explanation: 'Dates with ordinals; ihr imperatives sagt, bringt … mit.'},
+      {type: 'E-mail', question: 'Complete the reply to the invitation.',
+        text: 'Lieber Jan,\n\nvielen Dank für die [Einladung|invitation]. Ich komme sehr [gern|gladly] und bringe meine Schwester [mit|mitbringen, separable prefix]. Herzlichen [Glückwunsch|congratulations] schon jetzt zum [dreißigsten|30th → ordinal number] Geburtstag! [Kann|können, ich-Form] ich beim Grillen [helfen|to help]? Ich [würde|würden, ich-Form] gern einen Salat machen.\n\nBis bald\nElena',
+        explanation: 'Zum dreißigsten Geburtstag: ordinal after zum; würde gern for an offer.'}
     ]
   };
 
@@ -291,7 +419,7 @@
   const pack = {
     meta: {
       id: PACK_ID,
-      title: 'Gap-fill sentences and e-mails for Menschen A1 lessons 15–20',
+      title: 'Gap-fill sentences and e-mails for Menschen A1 lessons 15–24',
       level: 'A1',
       version: 1,
       note: 'Original texts with [answer|hint] gaps; no textbook exercises are reproduced.'
@@ -301,7 +429,7 @@
     sentences
   };
 
-  window.GERMAN_MENSCHEN_GAP_TEXTS_15_20 = pack;
+  window.GERMAN_MENSCHEN_GAP_TEXTS_15_24 = pack;
 
   const data = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
   if (!data) return;
@@ -320,4 +448,11 @@
   data.meta.version = Math.max(6, Number(data.meta.version) || 0);
   data.meta.packs = Array.isArray(data.meta.packs) ? data.meta.packs : [];
   if (!data.meta.packs.includes(PACK_ID)) data.meta.packs.push(PACK_ID);
+  data.meta.lessonTitles = {
+    ...(data.meta.lessonTitles || {}),
+    21: 'Traffic & rules',
+    22: 'Clothing & comparisons',
+    23: 'Weather & wishes',
+    24: 'Celebrations & invitations'
+  };
 })();
