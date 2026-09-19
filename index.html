@@ -49,6 +49,22 @@
     .input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
     .feedback{margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:44px}
     .verb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin-top:18px}
+    .gap-text{margin-top:14px;border:1px solid var(--border);border-radius:14px;padding:18px 20px 12px;background:#fbfcff;font-size:1.08rem;line-height:2.5}
+    .gap-text p{margin:0 0 4px}.gap-text .gap-space{height:.5em;margin:0}
+    .gap{position:relative;display:inline-flex;flex-direction:column;align-items:center;vertical-align:baseline;margin:0 3px;line-height:1.5;top:.35em}
+    .gap input{font:inherit;font-weight:600;color:var(--text);background:#fff;border:1.5px solid #c7cddb;border-radius:8px;padding:2px 26px 2px 10px;height:2em;min-width:4.5em;text-align:center;outline:none;margin:0;transition:border-color .15s,box-shadow .15s,background .15s}
+    .gap input.no-hint{padding-right:10px}
+    .gap input::placeholder{color:#c3c8d4;font-weight:400;letter-spacing:.2em}
+    .gap input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+    .gap.good input{border-color:var(--good);background:#e8f6ed;color:#1b6b34}
+    .gap.bad input{border-color:var(--bad);background:#fdecec;color:#a2261f}
+    .hint-btn{position:absolute;right:6px;top:.45em;width:18px;height:18px;border-radius:50%;border:1px solid #c7cddb;background:#fff;color:var(--muted);font-size:.65rem;font-weight:800;line-height:16px;text-align:center;cursor:help;padding:0;font-family:inherit}
+    .hint-btn:hover,.gap.open .hint-btn{border-color:var(--accent);color:var(--accent)}
+    .gap .pop{display:none;position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);background:#202634;color:#fff;font-size:.8rem;font-weight:500;line-height:1.35;padding:6px 10px;border-radius:8px;white-space:nowrap;z-index:5;box-shadow:0 8px 24px rgba(20,25,40,.18)}
+    .gap .pop::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#202634}
+    .gap:hover .pop,.gap.open .pop{display:block}
+    .gap .reveal{display:none;font-size:.78rem;line-height:1.2;margin-top:2px;font-weight:600;white-space:nowrap}
+    .gap.show .reveal,.gap.bad .reveal{display:block}.gap.show .reveal{color:var(--accent)}.gap.bad .reveal{color:var(--bad)}.gap.good.show .reveal{display:none}
     .verb-field{display:block;border:1px solid var(--border);border-radius:12px;padding:10px;font-weight:600;background:#fbfcff}
     .verb-field span{display:block;font-size:.9rem;color:var(--muted)}
     .verb-field .input{margin-top:6px}
@@ -213,6 +229,7 @@
         <div id="quizTag" class="small muted"></div>
         <div id="quizQuestion" class="question" style="margin-top:8px"></div>
         <div id="quizHint" class="small muted" style="margin-top:8px"></div>
+        <div id="gapText" class="gap-text hidden"></div>
         <label id="singleAnswerLabel" style="display:block;margin-top:18px;font-weight:600">Your answer
           <input id="quizInput" class="input" autocomplete="off" placeholder="Type in German…">
         </label>
@@ -372,6 +389,7 @@
   <script src="menschen-lessons-15-17.js"></script>
   <script src="menschen-lesson-18.js"></script>
   <script src="menschen-lessons-19-20.js"></script>
+  <script src="menschen-gap-texts-16-20.js"></script>
   <script>
   (() => {
     let DATA = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
@@ -852,9 +870,81 @@
       const hidden=box.classList.toggle('hidden');
       $('#toggleFlashAnswer').textContent=hidden?'Show answer':'Hide answer';
     }
+    function isGapItem(q){
+      return Boolean(q && typeof q.text==='string' && /\[[^\[\]|]+\|[^\[\]]*\]/.test(q.text));
+    }
+    function parseGapText(text){
+      return String(text).split('\n').map(line=>{
+        const parts=[];
+        const re=/\[([^\[\]|]+)\|([^\[\]]*)\]/g;
+        let last=0, m;
+        while((m=re.exec(line))){
+          if(m.index>last) parts.push({t:'text',v:line.slice(last,m.index)});
+          parts.push({t:'gap',a:m[1].trim(),h:m[2].trim()});
+          last=re.lastIndex;
+        }
+        if(last<line.length) parts.push({t:'text',v:line.slice(last)});
+        return parts;
+      });
+    }
+    function closeGapHints(){
+      document.querySelectorAll('.gap.open').forEach(g=>g.classList.remove('open'));
+    }
+    function gapInputs(){
+      return [...$('#gapText').querySelectorAll('input')];
+    }
+    function renderGapText(q){
+      const box=$('#gapText');
+      box.textContent='';
+      parseGapText(q.text).forEach(parts=>{
+        const p=document.createElement('p');
+        if(!parts.length){ p.className='gap-space'; box.appendChild(p); return; }
+        parts.forEach(part=>{
+          if(part.t==='text'){ p.appendChild(document.createTextNode(part.v)); return; }
+          const gap=document.createElement('span');
+          gap.className='gap';
+          const input=document.createElement('input');
+          input.size=Math.max(4,part.a.length+1);
+          input.placeholder='···';
+          input.autocomplete='off';
+          input.spellcheck=false;
+          input.dataset.answer=part.a;
+          input.setAttribute('aria-label','Missing word'+(part.h ? ', hint: '+part.h : ''));
+          input.addEventListener('input',()=>gap.classList.remove('good','bad'));
+          gap.appendChild(input);
+          if(part.h){
+            const btn=document.createElement('button');
+            btn.type='button';
+            btn.className='hint-btn';
+            btn.tabIndex=-1;
+            btn.setAttribute('aria-hidden','true');
+            btn.textContent='?';
+            btn.addEventListener('click',e=>{
+              e.preventDefault();
+              const open=gap.classList.contains('open');
+              closeGapHints();
+              if(!open) gap.classList.add('open');
+            });
+            const pop=document.createElement('span');
+            pop.className='pop';
+            pop.textContent=part.h;
+            gap.append(btn,pop);
+          }else{
+            input.classList.add('no-hint');
+          }
+          const reveal=document.createElement('span');
+          reveal.className='reveal';
+          reveal.textContent=part.a;
+          gap.appendChild(reveal);
+          p.appendChild(gap);
+        });
+        box.appendChild(p);
+      });
+    }
     function hideQuizAnswer(){
       $('#answerReveal').classList.add('hidden');
       $('#toggleQuizAnswer').textContent='Show answer';
+      document.querySelectorAll('#gapText .gap.show').forEach(g=>g.classList.remove('show'));
     }
     function renderVerbInputs(q){
       const grid=$('#verbAnswerGrid');
@@ -887,20 +977,44 @@
       $('#quizInput').value='';
       $('#feedback').textContent='';
       const isVerbCard=mode==='verbs';
-      $('#singleAnswerLabel').classList.toggle('hidden',isVerbCard);
+      const isGap=!isVerbCard && isGapItem(q);
+      $('#singleAnswerLabel').classList.toggle('hidden',isVerbCard||isGap);
       $('#verbAnswerGrid').classList.toggle('hidden',!isVerbCard);
+      $('#gapText').classList.toggle('hidden',!isGap);
       if(isVerbCard) renderVerbInputs(q);
       else $('#verbAnswerGrid').textContent='';
+      if(isGap) renderGapText(q);
+      else $('#gapText').textContent='';
       hideQuizAnswer();
       $('#progress').textContent=(index+1)+' / '+quizOrder.length;
       updateQueueUi();
       saveState();
-      const firstInput=isVerbCard ? $('#verbAnswerGrid').querySelector('input') : $('#quizInput');
+      const firstInput=isVerbCard ? $('#verbAnswerGrid').querySelector('input') :
+        isGap ? $('#gapText').querySelector('input') : $('#quizInput');
       if(firstInput) firstInput.focus();
     }
     function toggleQuizAnswer(){
       const q=currentList()[quizOrder[index]];
       const box=$('#answerReveal');
+      if(isGapItem(q) && mode!=='verbs'){
+        const showing=!box.classList.contains('hidden');
+        document.querySelectorAll('#gapText .gap').forEach(g=>g.classList.toggle('show',!showing));
+        box.textContent='';
+        if(!showing){
+          const heading=document.createElement('strong');
+          heading.textContent='Answer:';
+          box.append(heading,document.createTextNode(' shown under each gap. Your own words stay in the boxes.'));
+          if(q.explanation){
+            const note=document.createElement('div');
+            note.className='muted';
+            note.textContent=q.explanation;
+            box.appendChild(note);
+          }
+        }
+        box.classList.toggle('hidden',showing);
+        $('#toggleQuizAnswer').textContent=showing ? 'Show answer' : 'Hide answer';
+        return;
+      }
       if(box.classList.contains('hidden')){
         box.textContent='';
         const heading=document.createElement('strong');
@@ -1313,6 +1427,19 @@
           input.classList.toggle('wrong-field',!matches);
           input.setAttribute('aria-invalid',matches?'false':'true');
         });
+      }else if(isGapItem(q)){
+        const inputs=gapInputs();
+        if(inputs.some(input=>!normalize(input.value))){
+          $('#feedback').textContent='Fill every gap first.';
+          return;
+        }
+        isCorrect=inputs.every(input=>normalize(input.value)===normalize(input.dataset.answer));
+        inputs.forEach(input=>{
+          const matches=normalize(input.value)===normalize(input.dataset.answer);
+          input.parentElement.classList.toggle('good',matches);
+          input.parentElement.classList.toggle('bad',!matches);
+          input.setAttribute('aria-invalid',matches?'false':'true');
+        });
       }else{
         const given=normalize($('#quizInput').value);
         if(!given){ $('#feedback').textContent='Type an answer first.'; return; }
@@ -1333,6 +1460,7 @@
         correctSubmitReadyForNext = false;
         $('#feedback').innerHTML=mode==='verbs' ?
           '❌ Not quite. Review the highlighted forms, then try again or show the answer.' :
+          isGapItem(q) ? '❌ Not quite. The correct word is shown under each red gap.' :
           '❌ Not quite. Try again, or use “Show answer”.';
       }
       scoreUpdate();
@@ -1340,6 +1468,18 @@
     });
 
     $('#toggleQuizAnswer').addEventListener('click',toggleQuizAnswer);
+    $('#gapText').addEventListener('keydown',e=>{
+      if(e.key==='Escape'){ closeGapHints(); return; }
+      if(e.key!=='Enter' || correctSubmitReadyForNext) return;
+      const inputs=gapInputs();
+      const at=inputs.indexOf(e.target);
+      if(at<0) return;
+      const next=inputs.slice(at+1).find(input=>!normalize(input.value));
+      if(next){ e.preventDefault(); next.focus(); }
+    });
+    document.addEventListener('click',e=>{
+      if(!e.target.closest || !e.target.closest('.gap')) closeGapHints();
+    });
     $('#nextBtn').addEventListener('click',()=>{
       if(isLearnedKey(currentPracticeKey()) && !state.includeLearned) advancePastLearnedCurrent();
       else moveBy(1);
@@ -1444,6 +1584,7 @@
       if(e.key==='Escape'){
         closeSearchResults();
         closeShortcuts();
+        closeGapHints();
         return;
       }
       if(e.key==='?' && !isTextEditor){

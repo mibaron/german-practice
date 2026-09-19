@@ -12,6 +12,7 @@ The current data includes a complete Goethe-based adult A1 verb pack.
 - `menschen-lessons-15-17.js` — original vocabulary, grammar, and sentence practice aligned to lessons 15–17
 - `menschen-lesson-18.js` — original vocabulary, grammar, and sentence practice aligned to lesson 18
 - `menschen-lessons-19-20.js` — original vocabulary, grammar, and sentence practice aligned to lessons 19–20
+- `menschen-gap-texts-16-20.js` — gap-fill sentences, messages, and e-mails for lessons 16–20
 - `A1_VERBS.md` — human-readable A1 verb list
 
 ## Practice-set filter
@@ -33,6 +34,27 @@ reproductions of textbook exercises:
 - Lesson 18: body parts, illness and the doctor, advice with `sollen`, the formal imperative, and dative pronouns
 - Lesson 19: describing people, past forms of `sein`/`haben`, `un-` adjectives, and inseparable Perfekt forms
 - Lesson 20: household chores, `du`/`ihr` imperatives, polite requests, and accusative versus dative pronouns
+
+## Gap-fill sentences and e-mails
+
+Sentence practice can show a whole sentence, message, or e-mail with one input
+per missing word instead of a single answer box. The text stays visible while
+you type, so longer texts work as well as short sentences.
+
+- Each gap is written in the data as `[answer|hint]`, for example
+  `Ich [bin|sein, ich-Form] gerade bei der Arbeit.`
+- The hint is hidden. Hover over or click the small `?` inside a gap to see it;
+  Tab skips the marker and moves straight to the next gap.
+- Enter jumps to the next empty gap; on the last gap it checks the answer.
+- **Check** colours each gap green or red and prints the correct word under a
+  wrong gap. Editing a gap clears its colour.
+- **Show answer** prints the correct word under every gap and leaves what you
+  typed untouched.
+- An item counts as correct only when every gap is right.
+
+A gap item needs `type`, `question` (the task), `text` (with gaps), and
+optionally `explanation`. Bundled packs also set `answer` to the filled text so
+progress keys and exports stay stable.
 
 ## Flashcards
 
