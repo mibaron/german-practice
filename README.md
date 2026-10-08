@@ -6,6 +6,7 @@ The current data includes a complete Goethe-based adult A1 verb pack.
 ## Files
 
 - `index.html` — application interface and logic
+- `styles.css` — responsive study layout, navigation, practice cards, and reference drawers
 - `data.js` — core lesson content
 - `a1-verbs.js` — modular A1 verbs, conjugations, Perfekt forms and exercises
 - `menschen-lessons-12-14.js` — original vocabulary and grammar practice aligned to lessons 12–14
@@ -14,14 +15,28 @@ The current data includes a complete Goethe-based adult A1 verb pack.
 - `menschen-lessons-19-20.js` — original vocabulary, grammar, and sentence practice aligned to lessons 19–20
 - `menschen-lessons-21-24.js` — original vocabulary, grammar, and sentence practice aligned to lessons 21–24
 - `menschen-gap-texts-15-24.js` — gap-fill sentences, messages, and e-mails for lessons 15–24
+- `menschen-verbs-12-24.js` — lesson verb assignments and supplementary conjugations for lessons 12–24
 - `A1_VERBS.md` — human-readable A1 verb list
 
 ## Practice-set filter
+
+The study room uses a sidebar on desktop and compact mode buttons on mobile.
+Lesson selection and search sit above a focused practice card. The progress
+panel shows learned coverage across all modes in the selected practice set;
+navigation counts show the available items in each mode. Learned items,
+references, and backup settings are grouped in expandable toolkit sections.
+Keyboard focus stays visible, and answer-field focus keeps the current scroll
+position. Search also accepts `ae`, `oe`, `ue`, and `ss` spellings.
 
 Use the **Practice set** menu at the top of the app to show all material, one of
 the bundled lessons, or the existing untagged material. The selection applies
 to flashcards, grammar, sentence practice, search results, learned counts, and
 the verb reference table, and it is saved with browser progress.
+
+Every lesson from 12 through 24 includes Verb Quiz cards with Präsens and,
+where applicable, Perfekt forms. Verbs shared by several lessons appear once
+in **All practice** and keep the same progress in each lesson. Data entries can
+use `lesson` for a single lesson or `lessons` for an array of lesson numbers.
 
 The lesson packs contain original supplementary material rather than
 reproductions of textbook exercises:
@@ -91,6 +106,11 @@ existing `data.js` files, while the app displays and tests them as one group.
 The verb form is identical. For reflexive verbs, the combined answer preserves
 the required pronoun difference, for example `melden uns/sich an`.
 
+Answer checking accepts both German characters and their keyboard alternatives:
+`ä` / `ae`, `ö` / `oe`, `ü` / `ue`, and `ß` / `ss`. This applies to verb forms,
+grammar answers, sentences, and individual gaps; for example, `Straße` and
+`Strasse` both count as correct. Answers shown by the app retain German spelling.
+
 ## Search and keyboard controls
 
 The practice panel includes autocomplete search for verbs and vocabulary cards.
@@ -100,7 +120,7 @@ Selecting a result opens that exact item in Verb Quiz or Flashcards.
 - After a correct answer, press Enter again to open the next question.
 - Arrow Right opens the next practice item.
 - Arrow Left returns to the previous practice item.
-- `/` focuses practice search.
+- `Ctrl+F` (or `⌘F` on macOS) focuses practice search, even while typing an answer. `/` also focuses it when outside a text field.
 - Up/Down selects an autocomplete result; Enter opens it.
 - `?` opens the keyboard-shortcuts guide.
 - Escape closes autocomplete results or the shortcut guide.
@@ -111,7 +131,8 @@ Selecting a result opens that exact item in Verb Quiz or Flashcards.
 Learned practices are hidden by default in every section.
 
 - Three consecutive correct answers automatically mark an item as learned.
-- **Mark learned** and **Mark as learning** change the status manually.
+- **Mark learned (exclude)** removes the current item from active practice immediately.
+- **Learned list** shows learned items across all lessons and modes. Search the list and use **Restore to practice** to return an item to the active queue.
 - **Include learned** restores learned items for review.
 - A wrong answer returns an item to the active learning queue.
 - Search still finds learned verbs and words, labels them **Learned**, and can
@@ -126,10 +147,10 @@ progress and included in progress exports.
 
 The **Lesson data** panel provides three controls:
 
-- **Download our data.js** exports one complete standalone lesson file, including
+- **Export lesson data** exports one complete standalone lesson file, including
   the bundled A1 pack.
-- **Load my data.js** safely parses and activates a custom lesson file.
-- **Use bundled data** removes the saved custom lesson file and restores the
+- **Import lesson data** safely parses and activates a custom lesson file.
+- **Use built-in lessons** removes the saved custom lesson file and restores the
   built-in lessons.
 
 Custom lesson files are parsed as data and are not executed. The importer accepts

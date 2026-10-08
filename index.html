@@ -4,138 +4,49 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>German Practice</title>
-  <style>
-    :root{
-      --bg:#f6f7fb;--card:#fff;--text:#20242c;--muted:#6b7280;--border:#dfe3ea;
-      --accent:#3157d5;--accent-soft:#e9eeff;--good:#137333;--bad:#b3261e
-    }
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
-    button,input,select{font:inherit} button{cursor:pointer}
-    .wrap{max-width:980px;margin:auto;padding:24px}
-    .header{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
-    .header-tools{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
-    h1{margin:0 0 6px;font-size:clamp(1.6rem,4vw,2.2rem)} .sub{color:var(--muted);margin:0}
-    .lesson-filter{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin:18px 0}
-    .lesson-filter-control{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .lesson-select{min-width:290px;max-width:100%;padding:11px 38px 11px 12px;border:1px solid var(--border);border-radius:11px;background:#fff;color:var(--text);outline:none;cursor:pointer}
-    .lesson-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-    .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
-    .tabs button,.btn{border:1px solid var(--border);background:var(--card);border-radius:12px;padding:12px 14px}
-    .tabs button.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
-    .panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px}
-    .topline{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
-    .queue-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    .toggle-control{display:flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--card);border-radius:12px;padding:10px 12px;cursor:pointer}
-    .toggle-control input{accent-color:var(--accent)}
-    .learned-btn[aria-pressed="true"]{color:var(--good);border-color:var(--good);background:#f2fbf4}
-    .completion-card{text-align:center;padding:34px 24px}
-    .completion-card h2{margin:0 0 8px}
-    .muted{color:var(--muted)} .small{font-size:.9rem}
-    .card{border:1px solid var(--border);border-radius:16px;padding:24px;min-height:210px;background:#fbfcff}
-    .question{font-size:1.25rem;font-weight:700;line-height:1.45}
-    .answer{border-top:1px solid var(--border);margin-top:18px;padding-top:18px;line-height:1.55}
-    .answer-label{display:block;margin-bottom:5px;font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-    .flash-history{border-top:1px solid var(--border);margin-top:20px;padding-top:16px}
-    .flash-history-head,.flash-history-legend{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .flash-history-title{font-weight:700}.flash-history-summary{color:var(--muted);font-size:.85rem}
-    .attempt-track{display:flex;width:100%;height:12px;margin-top:9px;overflow:hidden;border-radius:999px;background:#e7e9ee;box-shadow:inset 0 0 0 1px rgba(32,36,44,.06)}
-    .attempt-segment{display:block;width:0;transition:width .2s ease}.attempt-correct{background:#2e9b50}.attempt-wrong{background:#d94a43}
-    .flash-history-legend{justify-content:flex-start;margin-top:8px;color:var(--muted);font-size:.8rem}
-    .history-key{display:inline-flex;align-items:center;gap:6px}.history-dot{width:9px;height:9px;border-radius:50%}.history-dot.good{background:#2e9b50}.history-dot.bad{background:#d94a43}
-    .hidden{display:none!important}
-    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-    .primary{background:var(--accent)!important;color:#fff;border-color:var(--accent)!important}
-    .input{width:100%;padding:13px 14px;border:1px solid var(--border);border-radius:12px;margin-top:8px;outline:none;background:#fff}
-    .input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-    .feedback{margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:12px;min-height:44px}
-    .verb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin-top:18px}
-    .gap-text{margin-top:14px;border:1px solid var(--border);border-radius:14px;padding:18px 20px 12px;background:#fbfcff;font-size:1.08rem;line-height:2.5}
-    .gap-text p{margin:0 0 4px}.gap-text .gap-space{height:.5em;margin:0}
-    .gap{position:relative;display:inline-flex;flex-direction:column;align-items:center;vertical-align:baseline;margin:0 3px;line-height:1.5;top:.35em}
-    .gap input{font:inherit;font-weight:600;color:var(--text);background:#fff;border:1.5px solid #c7cddb;border-radius:8px;padding:2px 26px 2px 10px;height:2em;min-width:4.5em;text-align:center;outline:none;margin:0;transition:border-color .15s,box-shadow .15s,background .15s}
-    .gap input.no-hint{padding-right:10px}
-    .gap input::placeholder{color:#c3c8d4;font-weight:400;letter-spacing:.2em}
-    .gap input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-    .gap.good input{border-color:var(--good);background:#e8f6ed;color:#1b6b34}
-    .gap.bad input{border-color:var(--bad);background:#fdecec;color:#a2261f}
-    .hint-btn{position:absolute;right:6px;top:.45em;width:18px;height:18px;border-radius:50%;border:1px solid #c7cddb;background:#fff;color:var(--muted);font-size:.65rem;font-weight:800;line-height:16px;text-align:center;cursor:help;padding:0;font-family:inherit}
-    .hint-btn:hover,.gap.open .hint-btn{border-color:var(--accent);color:var(--accent)}
-    .gap .pop{display:none;position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);background:#202634;color:#fff;font-size:.8rem;font-weight:500;line-height:1.35;padding:6px 10px;border-radius:8px;white-space:nowrap;z-index:5;box-shadow:0 8px 24px rgba(20,25,40,.18)}
-    .gap .pop::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#202634}
-    .gap:hover .pop,.gap.open .pop{display:block}
-    .gap .reveal{display:none;font-size:.78rem;line-height:1.2;margin-top:2px;font-weight:600;white-space:nowrap}
-    .gap.show .reveal,.gap.bad .reveal{display:block}.gap.show .reveal{color:var(--accent)}.gap.bad .reveal{color:var(--bad)}.gap.good.show .reveal{display:none}
-    .verb-field{display:block;border:1px solid var(--border);border-radius:12px;padding:10px;font-weight:600;background:#fbfcff}
-    .verb-field span{display:block;font-size:.9rem;color:var(--muted)}
-    .verb-field .input{margin-top:6px}
-    .input.correct-field{border-color:var(--good);background:#f2fbf4}
-    .input.wrong-field{border-color:var(--bad);background:#fff4f2}
-    .practice-search{margin:-2px 0 18px}
-    .search-box{position:relative;margin-top:6px}
-    .search-input{width:100%;padding:13px 42px 13px 14px;border:1px solid var(--border);border-radius:12px;outline:none;background:#fff}
-    .search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-    .search-key{position:absolute;right:12px;top:11px;color:var(--muted);pointer-events:none}
-    .search-results{position:absolute;z-index:20;top:calc(100% + 6px);left:0;right:0;max-height:320px;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 14px 35px rgba(26,34,56,.16);padding:6px}
-    .search-result{display:flex;width:100%;gap:12px;align-items:center;text-align:left;border:0;background:transparent;border-radius:10px;padding:10px}
-    .search-result:hover,.search-result.active{background:var(--accent-soft)}
-    .search-result-main{min-width:0;flex:1}
-    .search-result-title{display:block;font-weight:700}
-    .search-result-detail{display:block;color:var(--muted);font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-    .result-kind{font-size:.75rem;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:4px 8px;flex:none}
-    .modal{position:fixed;z-index:100;inset:0;display:grid;place-items:center;padding:18px;background:rgba(19,25,40,.58)}
-    .modal-card{width:min(520px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:18px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
-    .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .modal-head h2{margin:0;font-size:1.3rem}
-    .icon-btn{border:1px solid var(--border);background:var(--card);border-radius:10px;width:40px;height:40px;font-size:1.3rem}
-    .shortcut-list{list-style:none;padding:0;margin:18px 0 0}
-    .shortcut-list li{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:11px 0;border-bottom:1px solid var(--border)}
-    .shortcut-list li:last-child{border-bottom:0}
-    kbd{display:inline-block;min-width:34px;text-align:center;border:1px solid #cbd1dc;border-bottom-width:3px;border-radius:7px;background:#f8f9fb;padding:3px 7px;font:600 .8rem ui-monospace,SFMono-Regular,Consolas,monospace;white-space:nowrap}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
-    .stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
-    .stat strong{display:block;font-size:1.6rem;margin-top:4px}
-    .case-reference{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
-    .reference-head h2{margin:0;font-size:1.3rem}.reference-head p{margin:6px 0 0}
-    .case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
-    .case-card,.pronoun-card{border:1px solid var(--border);border-radius:12px;padding:16px;background:#fff}
-    .case-title{display:flex;align-items:center;gap:9px;font-size:1.05rem}
-    .case-badge{display:inline-flex;align-items:center;justify-content:center;min-width:44px;border-radius:999px;padding:4px 9px;background:var(--accent-soft);color:var(--accent);font-size:.75rem;font-weight:800;letter-spacing:.04em}
-    .case-question{margin:7px 0 0;color:var(--muted);font-size:.9rem}
-    .case-card table{min-width:390px;font-size:.84rem}.case-card th,.case-card td{padding:8px 6px}.case-card .tablewrap{margin-top:12px}
-    .case-example{margin:12px 0 0;border-left:3px solid var(--accent);padding:8px 10px;background:var(--accent-soft);border-radius:0 8px 8px 0;font-size:.9rem}
-    .pronoun-card{margin-top:14px}.pronoun-card h3{margin:0;font-size:1.05rem}.pronoun-card table{min-width:520px}
-    .case-tips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
-    .case-tip{border-radius:10px;background:#f7f8fa;padding:12px;font-size:.9rem;line-height:1.45}
-    details{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
-    summary{font-weight:700;cursor:pointer}.tablewrap{overflow:auto;margin-top:12px}
-    table{border-collapse:collapse;width:100%;min-width:760px;font-size:.9rem} th,td{border-bottom:1px solid var(--border);padding:9px;text-align:left} th{background:#fafafa}
-    .error{color:var(--bad);background:#fff4f2;border:1px solid #ffd2cc;border-radius:12px;padding:14px}
-    .backup{margin-top:14px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
-    .backup-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
-    .status{margin-top:10px;font-size:.9rem;color:var(--muted)}
-    .status.good{color:var(--good)} .status.bad{color:var(--bad)}
-    @media(max-width:760px){.case-grid,.case-tips{grid-template-columns:1fr}}
-    @media(max-width:650px){.wrap{padding:14px}.lesson-filter-control,.lesson-select{width:100%}.tabs{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr}.panel{padding:15px}.case-reference{padding:15px}}
-  </style>
+  <meta name="theme-color" content="#f6f5f0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="wrap">
-    <div class="header">
-      <div>
-        <h1>German Practice</h1>
-        <p class="sub">Flashcards, full verb conjugation, grammar and sentence practice across levels.</p>
-      </div>
-      <div class="header-tools">
-        <button id="shortcutsBtn" class="btn" type="button" aria-haspopup="dialog">⌨️ Keyboard shortcuts</button>
-        <div class="small muted">Data source: <strong>bundled lesson packs</strong></div>
-      </div>
-    </div>
 
-    <div id="loadError" class="error hidden">
-      The lesson data could not be loaded. Keep <strong>data.js</strong> in the same folder as <strong>index.html</strong>.
-    </div>
-
-    <section class="lesson-filter" aria-labelledby="lessonFilterLabel">
+  <a class="skip-link" href="#practiceCard">Skip to practice</a>
+  <svg class="svg-symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<symbol id="i-cards" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="16" rx="3"/><path d="M3 15V5a3 3 0 0 1 3-3h9M9 10h6M9 14h4"/></symbol>
+<symbol id="i-verb" viewBox="0 0 24 24"><path d="M4 19 10 5l6 14M6 14h8M17 6h4M19 4v4M17 18h4"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6v15M12 6C9 4 5 3 2 4v15c4-1 7 0 10 2 3-2 6-3 10-2V4c-3-1-7 0-10 2Z"/></symbol>
+<symbol id="i-write" viewBox="0 0 24 24"><path d="m15 4 5 5M3 21l5-1L21 7a2 2 0 0 0-5-5L3 15v6ZM13 21h8"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+<symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 3-2 4-4M14 8c1-2 2-2 4-2h3m-4-4 4 4-4 4"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+</svg>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Study navigation">
+      <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">g<span>·</span></span><span>German Practice<small>A little practice goes a long way.</small></span></a>
+      <div class="nav-caption">YOUR PRACTICE</div>
+      <nav class="tabs" aria-label="Practice mode">
+        <button type="button" data-mode="flash" aria-label="Flashcards"><svg class="icon" aria-hidden="true"><use href="#i-cards"/></svg><span>Flashcards</span><span class="nav-count" data-mode-count="flash"></span></button>
+        <button type="button" data-mode="verbs" aria-label="Verb Quiz"><svg class="icon" aria-hidden="true"><use href="#i-verb"/></svg><span>Verb Quiz</span><span class="nav-count" data-mode-count="verbs"></span></button>
+        <button type="button" data-mode="grammar" aria-label="Grammar"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg><span>Grammar</span><span class="nav-count" data-mode-count="grammar"></span></button>
+        <button type="button" data-mode="sentences" aria-label="Sentences"><svg class="icon" aria-hidden="true"><use href="#i-write"/></svg><span>Sentences</span><span class="nav-count" data-mode-count="sentences"></span></button>
+      </nav>
+      <div class="sidebar-library"><div class="nav-caption">YOUR TOOLKIT</div>
+        <a href="#learnedPractices" data-open-detail="learnedPractices"><span aria-hidden="true">✓</span>Learned practices</a>
+        <a href="#grammarReference" data-open-detail="grammarReference"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg>Grammar reference</a>
+        <a href="#progressSettings" data-open-detail="progressSettings"><span aria-hidden="true">↗</span>Progress & settings</a>
+      </div>
+      <div class="sidebar-note"><span class="level-label">A1 · MENSCHEN</span><p>Build confidence.<br>One small step at a time.</p><div class="note-rule"></div><span class="small muted">Lessons 12–24 & more</span></div>
+      <div class="sidebar-foot"><span class="saved-dot"></span> Your own pace. Your own space.</div>
+    </aside>
+    <main class="wrap" id="mainContent">
+      <header class="page-top"><span>German practice <span class="crumb-slash">/</span> <strong>Study room</strong></span><button id="shortcutsBtn" class="btn subtle" type="button" aria-haspopup="dialog"><span aria-hidden="true">⌘</span> Keyboard shortcuts</button></header>
+      <div class="header">
+        <div><div class="eyebrow">LITTLE STEPS, LASTING PROGRESS</div><h1>Make German <em>second nature.</em></h1><p class="sub">A space to practice, make mistakes, and get a little better.</p></div>
+        <span class="course-badge"><span class="saved-dot"></span> A1 learning space</span>
+      </div>
+      <div id="loadError" class="error hidden">The lesson data could not be loaded. Keep <strong>data.js</strong> in the same folder as <strong>index.html</strong>.</div>
+      <div class="study-toolbar">    <section class="lesson-filter" aria-labelledby="lessonFilterLabel">
       <div class="lesson-filter-control">
         <label id="lessonFilterLabel" for="lessonFilter"><strong>Practice set</strong></label>
         <select id="lessonFilter" class="lesson-select">
@@ -159,39 +70,33 @@
       <div id="lessonFilterSummary" class="small muted" aria-live="polite"></div>
     </section>
 
-    <section class="tabs" aria-label="Practice mode">
-      <button data-mode="flash" class="active">🃏 Flashcards</button>
-      <button data-mode="verbs">🔤 Verb Quiz</button>
-      <button data-mode="grammar">🧠 Grammar</button>
-      <button data-mode="sentences">✍️ Sentences</button>
-    </section>
-
-    <section class="panel">
-      <div class="topline">
-        <div>
-          <div id="modeLabel" class="small muted">Flashcards</div>
-          <div id="progress" class="small muted"></div>
-          <div id="queueSummary" class="small muted"></div>
-        </div>
-        <div class="queue-controls">
-          <label class="toggle-control"><input id="includeLearned" type="checkbox"> Include learned</label>
-          <button id="toggleLearnedBtn" class="btn learned-btn" type="button" aria-pressed="false">Mark learned</button>
-          <button id="shuffleBtn" class="btn" type="button">Shuffle</button>
-          <button id="resetBtn" class="btn" type="button">Reset progress</button>
-        </div>
-      </div>
-
       <div class="practice-search">
         <label for="practiceSearch" class="small muted">Find a verb or word</label>
-        <div class="search-box">
+        <div class="search-box"><svg class="icon search-icon" aria-hidden="true"><use href="#i-search"/></svg>
           <input id="practiceSearch" class="search-input" type="search" role="combobox"
             autocomplete="off" placeholder="Search verbs or vocabulary…"
             aria-autocomplete="list" aria-controls="searchResults" aria-expanded="false">
-          <kbd class="search-key" aria-hidden="true">/</kbd>
+          <kbd class="search-key" aria-hidden="true">Ctrl+F</kbd>
           <div id="searchResults" class="search-results hidden" role="listbox"></div>
         </div>
       </div>
 
+</div>
+      <div class="session-grid">
+        <div class="study-column">
+              <section class="panel" id="practiceCard" aria-label="Practice card" tabindex="-1">
+      <div class="topline">
+        <div class="practice-heading">
+          <span class="eyebrow">CURRENT PRACTICE</span>
+          <h2 id="modeLabel">Flashcards</h2>
+          <div id="queueSummary" class="small muted"></div>
+        </div>
+        <div class="card-position"><span class="small muted">CARD</span><span id="progress"></span></div>
+      </div>
+      <div class="practice-options">
+        <label class="toggle-control"><input id="includeLearned" type="checkbox"> Include learned</label>
+        <button id="shuffleBtn" class="btn subtle" type="button"><svg class="icon" aria-hidden="true"><use href="#i-shuffle"/></svg>Shuffle</button>
+      </div>
       <div id="completionPanel" class="card completion-card hidden">
         <h2>Active practice complete 🎉</h2>
         <p id="completionMessage" class="muted">Everything in this section is learned.</p>
@@ -238,24 +143,53 @@
           <input id="quizInput" class="input" autocomplete="off" placeholder="Type in German…">
         </label>
         <div id="verbAnswerGrid" class="verb-grid hidden"></div>
+        <p class="answer-note">English keyboard? <strong>ae · oe · ue · ss</strong> work too.</p>
         <div class="actions">
-          <button class="btn primary" type="submit">Check</button>
+          <button id="checkAnswerBtn" class="btn primary" type="submit">Check answer <span aria-hidden="true">↵</span></button>
           <button id="toggleQuizAnswer" class="btn" type="button">Show answer</button>
+          <button id="prevQuizBtn" class="btn icon-btn" type="button" aria-label="Previous practice">←</button>
           <button id="nextBtn" class="btn" type="button">Next →</button>
         </div>
         <div id="answerReveal" class="feedback hidden"></div>
         <div id="feedback" class="feedback" aria-live="polite"></div>
       </form>
+      <div class="practice-bottom">
+        <button id="toggleLearnedBtn" class="btn learned-btn" type="button" aria-pressed="false" title="Exclude this item from active practice"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span id="learnedButtonLabel">Mark learned (exclude)</span></button>
+        <button id="openLearnedBtn" class="btn subtle" type="button" aria-controls="learnedPractices">Learned list (0)</button>
+      </div>
     </section>
 
-    <section class="stats">
+
+          <div class="practice-footnote"><span id="practiceActionHint"><kbd>Enter</kbd> check & continue</span><span><kbd>←</kbd> <kbd>→</kbd> move between cards</span><span>Take your time. You’ve got this.</span></div>
+        </div>
+        <aside class="study-aside" aria-label="Your learning progress">
+          <section class="progress-card" aria-labelledby="lessonProgressTitle"><div class="eyebrow">THE BIG PICTURE</div><h2 id="lessonProgressTitle">Your progress</h2>
+            <div class="mastery-ring" id="masteryRing" role="img" aria-label="0% learned"><div><strong id="masteryPercent">0<span>%</span></strong><span>learned</span></div></div>
+            <div id="progressScope" class="progress-scope">All practice</div><p class="small muted">Every learned item is a step forward.</p>
+                <section class="stats">
       <div class="stat"><span class="small muted">Correct</span><strong id="correctScore">0</strong></div>
       <div class="stat"><span class="small muted">Attempts</span><strong id="attemptScore">0</strong></div>
       <div class="stat"><span class="small muted">Accuracy</span><strong id="accuracyScore">—</strong></div>
       <div class="stat"><span class="small muted">Learned practices</span><strong id="masteredScore">0</strong></div>
     </section>
 
-    <section class="case-reference" aria-labelledby="caseReferenceTitle">
+
+          </section>
+          <section class="study-tip"><div class="tip-art" aria-hidden="true"><span class="art-book">a<span>ä</span></span><span class="art-spark">✳</span></div><div class="eyebrow">A GOOD LITTLE HABIT</div><h3>One card at a time.</h3><p>Three correct answers in a row make an item learned. Or mark it yourself when you’re ready.</p></section>
+        </aside>
+      </div>
+      <section class="library-section" aria-label="Learning tools"><div class="library-heading"><h2>A little help, when you need it.</h2><span class="small muted">Your learning toolkit</span></div>
+            <details id="learnedPractices">
+      <summary id="learnedListSummary">Learned practices (0)</summary>
+      <p class="small muted">Learned items from all practice sets and modes. Restore any item to include it in active practice again.</p>
+      <label for="learnedSearch" class="small muted">Search learned items</label>
+      <input id="learnedSearch" class="input" type="search" placeholder="Filter learned practices…">
+      <p id="learnedListStatus" class="small muted" role="status"></p>
+      <ul id="learnedList" class="learned-list" aria-label="Learned practices"></ul>
+    </details>
+
+
+        <details id="grammarReference" class="reference-drawer"><summary>Grammar reference <span class="summary-note">Articles, pronouns & cases</span></summary>    <section class="case-reference" aria-labelledby="caseReferenceTitle">
       <div class="reference-head">
         <h2 id="caseReferenceTitle">Akkusativ &amp; Dativ reference</h2>
         <p class="small muted">Quick lookup for articles, personal pronouns, and the most useful A1 rules.</p>
@@ -325,7 +259,19 @@
       </div>
     </section>
 
-    <section class="backup" aria-labelledby="backupTitle">
+</details>
+
+            <details id="verbReference">
+      <summary>Verb reference table</summary>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Verb</th><th>Meaning</th><th>ich</th><th>du</th><th>er/sie/es</th><th>wir / sie / Sie</th><th>ihr</th><th>Perfekt</th></tr></thead>
+          <tbody id="verbTableBody"></tbody>
+        </table>
+      </div>
+    </details>
+
+        <details id="progressSettings" class="settings-drawer"><summary>Progress & settings <span class="summary-note">Backup, restore & lesson data</span></summary><div class="settings-grid">    <section class="backup" aria-labelledby="backupTitle">
       <div class="backup-head">
         <div>
           <strong id="backupTitle">Progress backup</strong>
@@ -338,6 +284,7 @@
         </div>
       </div>
       <div id="storageStatus" class="status" aria-live="polite">Checking browser storage…</div>
+      <div class="settings-reset"><button id="resetBtn" class="btn danger" type="button">Reset progress</button><span class="small muted">Clear saved scores and learning history.</span></div>
     </section>
 
     <section class="backup" aria-labelledby="dataTitle">
@@ -347,9 +294,9 @@
           <div id="dataSourceStatus" class="small muted">Using bundled lesson data.</div>
         </div>
         <div class="actions" style="margin:0">
-          <button id="downloadDataBtn" class="btn" type="button">Download our data.js</button>
-          <button id="loadDataBtn" class="btn" type="button">Load my data.js</button>
-          <button id="bundledDataBtn" class="btn" type="button">Use bundled data</button>
+          <button id="downloadDataBtn" class="btn" type="button">Export lesson data</button>
+          <button id="loadDataBtn" class="btn" type="button">Import lesson data</button>
+          <button id="bundledDataBtn" class="btn" type="button">Use built-in lessons</button>
           <input id="lessonDataFile" class="hidden" type="file" accept=".js,.json,text/javascript,application/javascript,application/json">
         </div>
       </div>
@@ -358,16 +305,12 @@
       </div>
     </section>
 
-    <details>
-      <summary>Verb reference table</summary>
-      <div class="tablewrap">
-        <table>
-          <thead><tr><th>Verb</th><th>Meaning</th><th>ich</th><th>du</th><th>er/sie/es</th><th>wir / sie / Sie</th><th>ihr</th><th>Perfekt</th></tr></thead>
-          <tbody id="verbTableBody"></tbody>
-        </table>
-      </div>
-    </details>
-  </main>
+</div></details>
+      </section>
+      <footer class="page-footer"><span>German Practice</span><span id="footerSaveStatus">Practice at your own pace.</span></footer>
+    </main>
+  </div>
+
 
   <div id="shortcutsModal" class="modal hidden" role="dialog" aria-modal="true"
     aria-labelledby="shortcutsTitle" aria-hidden="true">
@@ -379,7 +322,7 @@
       <ul class="shortcut-list">
         <li><span>Check an answer; press again after a correct answer to continue</span><kbd>Enter</kbd></li>
         <li><span>Previous or next practice item</span><span><kbd>←</kbd> <kbd>→</kbd></span></li>
-        <li><span>Focus verb and word search</span><kbd>/</kbd></li>
+        <li><span>Focus verb and word search</span><span><kbd>Ctrl+F</kbd> <kbd>⌘F</kbd> <kbd>/</kbd></span></li>
         <li><span>Move through autocomplete results</span><span><kbd>↑</kbd> <kbd>↓</kbd></span></li>
         <li><span>Open this shortcut guide</span><kbd>?</kbd></li>
         <li><span>Close search results or this dialog</span><kbd>Esc</kbd></li>
@@ -395,6 +338,7 @@
   <script src="menschen-lessons-19-20.js"></script>
   <script src="menschen-lessons-21-24.js"></script>
   <script src="menschen-gap-texts-15-24.js"></script>
+  <script src="menschen-verbs-12-24.js"></script>
   <script>
   (() => {
     let DATA = window.GERMAN_PRACTICE_DATA || window.GERMAN_A1_DATA;
@@ -624,24 +568,26 @@
     }
     function currentItemKey(q){ return quizKey(mode, q); }
 
-    function itemLesson(item){
-      if(!item || item.lesson == null || String(item.lesson).trim()==='') return 'other';
-      return String(item.lesson).replace(/^lesson\s*/i,'').trim();
+    function itemLessons(item){
+      const values=[item && item.lesson,...(Array.isArray(item && item.lessons) ? item.lessons : [])];
+      const lessons=values.filter(value=>value != null).map(value=>String(value).replace(/^lesson\s*/i,'').trim()).filter(Boolean);
+      return lessons.length ? [...new Set(lessons)] : ['other'];
     }
     function matchesLesson(item){
       if(lessonFilter==='all') return true;
-      const value=itemLesson(item);
-      return lessonFilter==='other' ? value==='other' : value===lessonFilter;
+      return itemLessons(item).includes(lessonFilter);
     }
     function lessonBadge(item, fallback){
-      const value=itemLesson(item);
-      return value==='other' ? fallback : 'L'+value+' · '+fallback;
+      const values=itemLessons(item);
+      if(values.includes('other')) return fallback;
+      return (lessonFilter==='all' ? values.map(value=>'L'+value).join(' / ') : 'L'+lessonFilter)+' · '+fallback;
     }
 
     function setStatus(message, kind=''){
       const el = $('#storageStatus');
       el.textContent = message;
       el.className = 'status' + (kind ? ' ' + kind : '');
+      $('#footerSaveStatus').textContent=storageWorks ? 'Progress saved in this browser.' : 'Progress is not saved. Export a backup in settings.';
     }
     function saveState(showMessage=false){
       state.correct = correct;
@@ -665,7 +611,9 @@
     }
 
     function normalize(s){
-      return String(s).toLowerCase().trim().replace(/[.!?]/g,'').replace(/\s+/g,' ');
+      return String(s).normalize('NFC').toLowerCase()
+        .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+        .trim().replace(/[.!?]/g,'').replace(/\s+/g,' ');
     }
     function shuffle(arr){
       for(let i=arr.length-1;i>0;i--){
@@ -702,7 +650,75 @@
       $('#attemptScore').textContent=attempts;
       $('#accuracyScore').textContent=attempts ? Math.round(correct/attempts*100)+'%' : '—';
       $('#masteredScore').textContent=masteredCount() + '/' + allPracticeKeys().length;
+      const total=allPracticeKeys().length;
+      const percent=total ? Math.round(masteredCount()/total*100) : 0;
+      $('#masteryPercent').textContent=percent+'%';
+      $('#masteryRing').style.setProperty('--learned-angle',(percent*3.6)+'deg');
+      $('#masteryRing').setAttribute('aria-label',percent+'% of '+lessonFilterLabels[lessonFilter].toLowerCase()+' learned');
+      $('#progressScope').textContent=lessonFilterLabels[lessonFilter]+' · all modes';
       updateLessonFilterUi();
+      renderLearnedList();
+    }
+    function learnedPracticeItems(){
+      const items=DATA.flashcards.map(card=>({
+        key:flashKey(card), title:flashcardSides(card).question,
+        searchText:[card.front,card.back,card.german,card.english].filter(Boolean).join(' '), kind:'Flashcard', item:card
+      }));
+      [['verbs',verbQs,'Verb Quiz'],['grammar',DATA.grammar,'Grammar'],['sentences',DATA.sentences,'Sentences']].forEach(([kind,list,label])=>{
+        list.forEach(item=>items.push({key:quizKey(kind,item),title:item.question,kind:label,item}));
+      });
+      return [...new Map(items.filter(item=>isLearnedKey(item.key)).map(item=>[item.key,item])).values()];
+    }
+    function renderLearnedList(){
+      const items=learnedPracticeItems();
+      $('#openLearnedBtn').textContent='Learned list ('+items.length+')';
+      $('#learnedListSummary').textContent='Learned practices ('+items.length+')';
+      const needle=normalize($('#learnedSearch').value);
+      const visible=items.filter(entry=>normalize(entry.title+' '+(entry.searchText||'')+' '+entry.kind+' '+itemLessons(entry.item).join(' ')).includes(needle));
+      const list=$('#learnedList');
+      list.textContent='';
+      $('#learnedListStatus').textContent=!items.length ? 'No learned practices yet. Use “Mark learned (exclude)” on any practice.' :
+        !visible.length ? 'No learned practices match your search.' : visible.length+' of '+items.length+' learned practices';
+      visible.forEach(entry=>{
+        const row=document.createElement('li');
+        row.className='learned-row';
+        const description=document.createElement('div');
+        const title=document.createElement('strong');
+        title.className='learned-title';
+        title.textContent=entry.title;
+        const meta=document.createElement('span');
+        meta.className='small muted learned-meta';
+        const lessons=itemLessons(entry.item);
+        meta.textContent=entry.kind+' · '+(lessons.includes('other') ? 'Other material' : 'Lesson '+lessons.join(', '));
+        description.append(title,meta);
+        const button=document.createElement('button');
+        button.type='button';
+        button.className='btn';
+        button.textContent='Restore to practice';
+        button.setAttribute('aria-label','Restore to practice: '+entry.title+' ('+entry.kind+')');
+        button.addEventListener('click',()=>restoreLearnedPractice(entry.key));
+        row.append(description,button);
+        list.appendChild(row);
+      });
+    }
+    function restoreLearnedPractice(key){
+      const currentKey=currentPracticeKey();
+      setLearnedKey(key,false);
+      if(mode==='flash') flashOrder=buildFlashOrder(); else makeQuizOrder();
+      const order=mode==='flash' ? flashOrder : quizOrder;
+      const list=mode==='flash' ? DATA.flashcards : currentList();
+      const position=order.findIndex(rawIndex=>(mode==='flash' ? flashKey(list[rawIndex]) : quizKey(mode,list[rawIndex]))===currentKey);
+      if(position>=0){
+        index=position;
+        $('#progress').textContent=(index+1)+' / '+order.length;
+        updateQueueUi();
+      }else{
+        index=0;
+        if(mode==='flash') showFlash(); else showQuiz();
+      }
+      scoreUpdate();
+      saveState(true);
+      $('#learnedSearch').focus();
     }
     function recordItem(key, wasCorrect){
       const stat = state.itemStats[key] || {attempts:0, correct:0, correctStreak:0, lastAt:null};
@@ -748,6 +764,7 @@
           explanation:v.meaning || 'Fill in every form.',
           fields,
           lesson:v.lesson,
+          lessons:v.lessons,
           pack:v.pack
         };
       });
@@ -780,9 +797,21 @@
       const key=currentPracticeKey();
       const learnedCurrent=isLearnedKey(key);
       $('#toggleLearnedBtn').disabled=!key;
-      $('#toggleLearnedBtn').textContent=learnedCurrent ? 'Mark as learning' : 'Mark learned';
+      $('#learnedButtonLabel').textContent=learnedCurrent ? 'Restore to practice' : 'Mark learned (exclude)';
+      $('#toggleLearnedBtn').title=learnedCurrent ? 'Include this item in active practice again' : 'Exclude this item from active practice';
       $('#toggleLearnedBtn').setAttribute('aria-pressed',learnedCurrent?'true':'false');
       $('#includeLearned').checked=state.includeLearned;
+      $('#practiceActionHint').innerHTML=mode==='flash' ? 'Reveal the answer, then rate your recall.' : '<kbd>Enter</kbd> check & continue';
+      updatePracticeNav();
+    }
+    function updatePracticeNav(){
+      const lists={flash:DATA.flashcards,verbs:verbQs,grammar:DATA.grammar,sentences:DATA.sentences};
+      modes.forEach(kind=>{
+        const count=lists[kind].filter(matchesLesson).filter(item=>state.includeLearned ||
+          !isLearnedKey(kind==='flash' ? flashKey(item) : quizKey(kind,item))).length;
+        document.querySelector('[data-mode-count="'+kind+'"]').textContent=count;
+        document.querySelector('[data-mode="'+kind+'"]').setAttribute('aria-description',count+' practice items');
+      });
     }
     function buildFlashOrder(){
       return [...Array(DATA.flashcards.length).keys()]
@@ -985,6 +1014,7 @@
       $('#quizHint').textContent=mode==='verbs' ? (q.explanation||'') : '';
       $('#quizInput').value='';
       $('#feedback').textContent='';
+      delete $('#feedback').dataset.state;
       const isVerbCard=mode==='verbs';
       const isGap=!isVerbCard && isGapItem(q);
       $('#singleAnswerLabel').classList.toggle('hidden',isVerbCard||isGap);
@@ -1000,7 +1030,7 @@
       saveState();
       const firstInput=isVerbCard ? $('#verbAnswerGrid').querySelector('input') :
         isGap ? $('#gapText').querySelector('input') : $('#quizInput');
-      if(firstInput) firstInput.focus();
+      if(firstInput) firstInput.focus({preventScroll:true});
     }
     function toggleQuizAnswer(){
       const q=currentList()[quizOrder[index]];
@@ -1056,7 +1086,11 @@
       state.positions[mode] = index;
       mode=next;
       index=safeInt(state.positions[mode]);
-      document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+      document.querySelectorAll('[data-mode]').forEach(b=>{
+        const active=b.dataset.mode===mode;
+        b.classList.toggle('active',active);
+        b.setAttribute('aria-pressed',active?'true':'false');
+      });
       const labels={flash:'Flashcards',verbs:'Verb conjugation',grammar:'Grammar',sentences:'Sentence practice'};
       $('#modeLabel').textContent=labels[mode];
       if(mode==='flash'){
@@ -1156,9 +1190,10 @@
         searchText:[verb.verb,verb.meaning,...Object.values(verb.present||{}),verb.perfekt||''].join(' '),
         mode:'verbs',
         dataIndex,
-        lesson:itemLesson(verb),
+        lesson:verb.lesson,
+        lessons:verb.lessons,
         key:quizKey('verbs',verbQs[dataIndex])
-      })).filter(item=>lessonFilter==='all' || (lessonFilter==='other' ? item.lesson==='other' : item.lesson===lessonFilter));
+      })).filter(matchesLesson);
       const wordItems=DATA.flashcards.map((card,dataIndex)=>({
         kind:lessonBadge(card,'Word'),
         title:flashcardSearchTitle(card),
@@ -1166,9 +1201,10 @@
         searchText:[card.front||'',card.back||''].join(' '),
         mode:'flash',
         dataIndex,
-        lesson:itemLesson(card),
+        lesson:card.lesson,
+        lessons:card.lessons,
         key:flashKey(card)
-      })).filter(item=>lessonFilter==='all' || (lessonFilter==='other' ? item.lesson==='other' : item.lesson===lessonFilter));
+      })).filter(matchesLesson);
       searchItems=[...verbItems,...wordItems];
     }
     function closeSearchResults(){
@@ -1205,15 +1241,15 @@
       if(item.mode==='flash') showFlash(); else showQuiz();
     }
     function renderSearchResults(query){
-      const needle=String(query||'').toLocaleLowerCase('de-DE').trim();
+      const needle=normalize(query||'');
       const results=$('#searchResults');
       results.textContent='';
       if(!needle){ closeSearchResults(); return; }
       searchMatches=searchItems
-        .filter(item=>(item.title+' '+item.searchText).toLocaleLowerCase('de-DE').includes(needle))
+        .filter(item=>normalize(item.title+' '+item.searchText).includes(needle))
         .sort((a,b)=>{
-          const aStarts=a.title.toLocaleLowerCase('de-DE').startsWith(needle) ? 0 : 1;
-          const bStarts=b.title.toLocaleLowerCase('de-DE').startsWith(needle) ? 0 : 1;
+          const aStarts=normalize(a.title).startsWith(needle) ? 0 : 1;
+          const bStarts=normalize(b.title).startsWith(needle) ? 0 : 1;
           return aStarts-bStarts || a.title.localeCompare(b.title,'de');
         })
         .slice(0,8);
@@ -1335,7 +1371,7 @@
         'Using your custom lesson data.' : 'Using bundled lesson data.';
       if (!options.quiet) {
         setDataStatus(
-          customDataActive ? 'Custom data.js loaded safely.' : 'Bundled lesson data restored.',
+          customDataActive ? 'Your lesson data loaded.' : 'Built-in lessons restored.',
           'good'
         );
       }
@@ -1379,7 +1415,7 @@
       link.click();
       link.remove();
       setTimeout(()=>URL.revokeObjectURL(url),1000);
-      setDataStatus('Bundled data.js downloaded.', 'good');
+      setDataStatus('Lesson data exported.', 'good');
     }
     function restoreBundledData(){
       try { localStorage.removeItem(CUSTOM_DATA_STORAGE_KEY); } catch (err) {}
@@ -1457,6 +1493,7 @@
       attempts++;
       const key=currentItemKey(q);
       const stat=recordItem(key,isCorrect);
+      $('#feedback').dataset.state=isCorrect?'correct':'wrong';
       if(isCorrect){
         correct++;
         correctSubmitReadyForNext=true;
@@ -1493,6 +1530,12 @@
       if(isLearnedKey(currentPracticeKey()) && !state.includeLearned) advancePastLearnedCurrent();
       else moveBy(1);
     });
+    $('#prevQuizBtn').addEventListener('click',()=>moveBy(-1));
+    document.querySelectorAll('[data-open-detail]').forEach(link=>link.addEventListener('click',()=>{
+      const drawer=document.getElementById(link.dataset.openDetail);
+      drawer.open=true;
+      if(drawer.id==='learnedPractices') renderLearnedList();
+    }));
     $('#toggleLearnedBtn').addEventListener('click',()=>{
       const key=currentPracticeKey();
       if(!key) return;
@@ -1503,6 +1546,12 @@
       if(makeLearned && !state.includeLearned) advancePastLearnedCurrent();
       else updateQueueUi();
     });
+    $('#openLearnedBtn').addEventListener('click',()=>{
+      $('#learnedPractices').open=true;
+      renderLearnedList();
+      $('#learnedSearch').focus();
+    });
+    $('#learnedSearch').addEventListener('input',renderLearnedList);
     $('#includeLearned').addEventListener('change',e=>{
       const currentKey=currentPracticeKey();
       state.includeLearned=e.target.checked;
@@ -1586,7 +1635,20 @@
     });
 
     document.addEventListener('keydown',e=>{
-      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+      if(e.defaultPrevented) return;
+      if(e.key==='Tab' && !$('#shortcutsModal').classList.contains('hidden')){
+        e.preventDefault();
+        $('#closeShortcutsBtn').focus();
+        return;
+      }
+      if((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase()==='f'){
+        e.preventDefault();
+        closeShortcuts();
+        $('#practiceSearch').focus();
+        $('#practiceSearch').select();
+        return;
+      }
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
       const target=e.target;
       const isTextEditor=target && target.matches &&
         target.matches('input:not([type="file"]), textarea, [contenteditable="true"]');
@@ -1608,6 +1670,7 @@
       }
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
       if(!$('#shortcutsModal').classList.contains('hidden')) return;
+      if(target && target.id==='learnedSearch') return;
       const hasEditableText=isTextEditor &&
         String(target.value == null ? target.textContent || '' : target.value).length > 0;
       if (hasEditableText && !correctSubmitReadyForNext) return;
