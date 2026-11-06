@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تمرین درس‌های ۱۱ و ۱۲ · Menschen A2.1</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{font-family:Tahoma,"Segoe UI",sans-serif;color:#243d33;background:#f6f5f0;line-height:1.85;color-scheme:light}
+*{box-sizing:border-box}body{margin:0}main{max-width:1040px;margin:auto;padding:28px 22px 64px}
+a{color:#27674f}header{margin-bottom:24px}h1{font-size:clamp(25px,4vw,38px);margin:12px 0}h2{font-size:23px}
+p{margin:8px 0}button,input,select,textarea{font:inherit}button,select{cursor:pointer}button{border:1px solid #27674f;background:#27674f;color:white;padding:9px 15px;border-radius:9px}
+button.secondary{background:white;color:#27674f;border-color:#bccdc1}button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #bb792c;outline-offset:3px}
+input,textarea,select{border:1px solid #9eafa4;border-radius:8px;background:white;color:#243d33;padding:9px 12px;max-width:100%}
+input:focus,textarea:focus{outline:3px solid #bed7c7;border-color:#27674f}input,textarea{width:100%;font-family:"Segoe UI",Arial,sans-serif;font-size:18px}
+textarea{min-height:95px;resize:vertical}label{display:block;font-size:14px;margin:10px 0 5px}.toolbar{display:flex;gap:14px;align-items:end;flex-wrap:wrap;padding:18px;background:#e8efe7;border-radius:14px}
+.toolbar label{margin:0}.toolbar select{display:block;min-width:200px}.status{margin:14px 0;color:#536357}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:white;border:1px solid #dce3da;border-radius:14px;padding:20px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.card h3{font-size:13px;font-weight:normal;color:#65725f;margin:0}.card .instruction{font-weight:bold;min-height:48px}.prompt{font-size:19px;line-height:1.7;overflow-wrap:anywhere;margin:0}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px}.feedback{border-radius:8px;padding:10px;overflow-wrap:anywhere}.feedback:empty{display:none}.correct{background:#e9f4eb;color:#21562f}.wrong{background:#fff0ec;color:#823522}.neutral{background:#f3f2eb;color:#4f5348}
+.reference{background:#fff;border:1px solid #dce3da;border-radius:14px;padding:15px 20px;margin:18px 0}.reference summary{cursor:pointer;font-weight:bold}.example{font-family:"Segoe UI",Arial,sans-serif;font-size:18px}
+footer{margin-top:28px;font-size:13px;color:#65725f}.badge{font-size:13px;letter-spacing:1px;color:#526f59}.save-warning{color:#823522}
+@media(max-width:650px){main{padding:20px 14px 40px}.grid{grid-template-columns:1fr}.toolbar{align-items:stretch}.toolbar label,.toolbar select{width:100%}.card .instruction{min-height:0}}
+</style>
+<script defer src="a2-1-lessons-11-12.js"></script>
+<script defer src="a2-1-lessons-11-12-ui.js"></script>
+</head>
+<body>
+<main>
+<header>
+<a href="index.html">← بازگشت به اتاق تمرین</a>
+<p class="badge" lang="de" dir="ltr">MENSCHEN · A2.1</p>
+<h1>درس‌های ۱۱ و ۱۲ را تمرین کن</h1>
+<p>۴۸ تمرین با توضیح فارسی؛ از ضمیرهای انعکاسی تا جمله‌سازی با wenn.</p>
+<p>جواب‌ها را به آلمانی بنویس. شکل‌های ae، oe، ue و ss هم پذیرفته می‌شوند.</p>
+</header>
+<div class="toolbar">
+<label for="lesson">انتخاب درس
+<select id="lesson"><option value="11">درس ۱۱ · Ich freue mich so.</option><option value="12">درس ۱۲ · Wenn …</option></select>
+</label>
+<button type="button" id="checkAll">بررسی پاسخ‌های این درس</button>
+</div>
+<p id="progress" class="status" aria-live="polite"></p>
+<p id="saveStatus" class="status">پاسخ‌ها و پیشرفت در همین مرورگر ذخیره می‌شوند.</p>
+<details class="reference">
+<summary>یادآوری کوتاهٔ گرامر</summary>
+<div id="reference"></div>
+</details>
+<h2 id="lessonTitle"></h2>
+<p>«نمایش پاسخ» امتیاز نمی‌دهد. برای نوشتن آزاد، پاسخ خودت را با نمونه و راهنما مقایسه کن.</p>
+<div id="exercises" class="grid"></div>
+<noscript>برای نمایش و بررسی تمرین‌ها، JavaScript مرورگر را فعال کن.</noscript>
+<footer>
+<p>تمرین‌های تألیفی برای مرور مباحث کتاب؛ شامل تمرین‌های این گفت‌وگو و سؤال‌های تکمیلی.</p>
+<p>منبع تطبیق موضوع‌ها: <a href="https://edit.hueber.de/media/36/msn-a2-1-unterrichtsplan_L11.pdf">راهنمای رسمی درس ۱۱</a> · <a href="https://edit.hueber.de/media/36/msn-a2-1-unterrichtsplan_L12.pdf">راهنمای رسمی درس ۱۲</a></p>
+</footer>
+</main>
+</body>
+</html>

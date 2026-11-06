@@ -198,3 +198,20 @@ files following the pattern in `a1-verbs.js`, then load them after `data.js`.
 
 CEFR itself does not prescribe one universal verb list; this project uses the
 Goethe adult A1 inventory as its explicit scope.
+
+## Menschen A2.1 · Lessons 11 and 12
+
+Open [the Persian practice page](a2-1-lessons-11-12.html) from the link at the top
+of the home page. It includes 48 original exercises (24 per lesson), including
+46 automatically checked questions and two free-writing prompts with models.
+Lesson 11 covers reflexive verbs, materials, and congratulations. Lesson 12
+covers `wenn`, food habits, comparisons, and expressions of surprise.
+Answers, corrections, and explanations are in German and Persian. German
+keyboard alternatives are accepted. Drafts and checked progress are saved under
+a separate browser key; showing an answer does not award credit. Free writing
+is never automatically marked right or wrong. These A2.1 lessons are separate
+from the existing A1 lesson numbers and progress.
+
+Files: `a2-1-lessons-11-12.html`, `a2-1-lessons-11-12.js`, and
+`a2-1-lessons-11-12-ui.js`. No build or external dependencies are required.
+Run the content/grading checks with `node --test tests/a2-lessons-11-12.test.cjs`.
