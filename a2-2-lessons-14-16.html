@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>درس‌های ۱۴ تا ۱۶ · Menschen A2.2</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="a2-2-lessons-14-16.css">
+<script defer src="a2-2-lessons-14-16.js"></script>
+<script defer src="a2-2-lessons-14-16-ui.js"></script>
+</head>
+<body>
+<a class="skip" href="#content">رفتن به تمرین‌ها</a>
+<main>
+<header>
+<div class="top"><a href="index.html">بازگشت به اتاق تمرین ←</a><a href="a2-1-lessons-11-12.html">مرور درس‌های ۱۱ و ۱۲</a></div>
+<p class="eyebrow" lang="de" dir="ltr">MENSCHEN · A2.2</p>
+<h1>هر روز کمی روان‌تر.</h1>
+<p>درس‌های ۱۴، ۱۵ و ۱۶؛ واژه‌ها را یاد بگیر، جمله بساز و در موقعیت واقعی به کار ببر.</p>
+<p id="inventory" class="muted"></p>
+</header>
+<section class="controls" aria-label="انتخاب محتوا">
+<label for="lesson">درس<select id="lesson"><option value="14">۱۴ · پست و مجهول</option><option value="15">۱۵ · رسانه و دو مفعول</option><option value="16">۱۶ · هتل و سؤال غیرمستقیم</option></select></label>
+<label for="search">جست‌وجو<input id="search" type="search" placeholder="واژه، معنی یا موضوع…" autocomplete="off"></label>
+</section>
+<nav id="modes" aria-label="بخش‌های یادگیری"></nav>
+<div class="section-heading"><div><h2 id="sectionTitle"></h2><p id="lessonSubtitle" class="muted"></p></div><span id="progress" role="status"></span></div>
+<div class="filters">
+<label id="topicWrap" for="topic">موضوع<select id="topic"><option value="all">همهٔ موضوع‌ها</option></select></label>
+<label id="remainingWrap" class="check"><input id="remaining" type="checkbox"> فقط واژه‌های یادنگرفته</label>
+<label id="directionWrap" class="check"><input id="direction" type="checkbox"> پرسش فلش‌کارت به آلمانی</label>
+<button id="checkPage" type="button">بررسی همین صفحه</button>
+</div>
+<p id="storageStatus" class="muted" role="status"></p>
+<p id="notice" role="status"></p>
+<div id="content" tabindex="-1"></div>
+<div class="pager"><button id="prev" class="secondary" type="button">قبلی</button><span id="pageStatus" aria-live="polite"></span><button id="next" class="secondary" type="button">بعدی</button></div>
+<details class="backup"><summary>پشتیبان پیشرفت</summary><p>پاسخ‌ها، نوشته‌ها و واژه‌های یادگرفته‌شدهٔ این سه درس در همین مرورگر ذخیره می‌شوند.</p>
+<button type="button" id="export" class="secondary">دریافت پشتیبان</button> <button type="button" id="import" class="secondary">وارد کردن پشتیبان</button>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+</details>
+<footer><p>محتوای تألیفی برای تمرین مباحث درس‌ها، با مثال‌ها و متن‌های جدید. پاسخ‌های آزاد نمونه و چک‌لیست دارند؛ خودکار نمره نمی‌گیرند. تلفظ با صدای مصنوعی دستگاه در مرورگرهای پشتیبانی‌شده در دسترس است.</p><p id="sources"></p></footer>
+<noscript>برای نمایش تمرین‌ها، JavaScript مرورگر را فعال کن.</noscript>
+</main>
+</body>
+</html>

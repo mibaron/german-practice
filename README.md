@@ -215,3 +215,35 @@ from the existing A1 lesson numbers and progress.
 Files: `a2-1-lessons-11-12.html`, `a2-1-lessons-11-12.js`, and
 `a2-1-lessons-11-12-ui.js`. No build or external dependencies are required.
 Run the content/grading checks with `node --test tests/a2-lessons-11-12.test.cjs`.
+
+## Menschen A2.2 · Lessons 14–16
+
+Open [the A2.2 study room](a2-2-lessons-14-16.html) from the home-page banner.
+It has 150 vocabulary entries with German examples and Persian meanings,
+reversible flashcards, and 524 practice tasks:
+
+- 285 vocabulary recall, article and plural questions
+- 96 grammar questions (gaps, sentence transformations, word order and corrections)
+- 83 verb-form questions covering 12 verbs
+- 18 listening/dictation tasks using device speech synthesis
+- 30 comprehension questions across six original reading passages
+- Six writing and six speaking tasks with model answers and checklists
+
+Lesson 14 covers postal services, gifts, present passive and thank-you messages.
+Lesson 15 covers television/media habits, dative/accusative objects and pronoun
+order. Lesson 16 covers hotel reservations, indirect questions with question
+words or `ob`, and directions with `durch`, `an … vorbei` and `gegenüber von`.
+Each lesson includes Persian grammar notes and new German examples. This is
+original supplementary practice aligned to the publisher's lesson guides, not
+an exhaustive transcription of the textbook or its exercise/audio content.
+
+The study room includes search, topic filters, 12-question pages, reversible
+flashcards, learned-word filtering, per-answer feedback, and browser speech
+synthesis when available. Free responses are self-reviewed rather than graded.
+Progress uses a dedicated A2.2 storage key and supports validated JSON backup
+import/export. It never replaces A1 or A2.1 progress. Revealing an answer does
+not award credit. All static assets are local; no build step is needed.
+
+Files: `a2-2-lessons-14-16.html`, `a2-2-lessons-14-16.css`,
+`a2-2-lessons-14-16.js`, and `a2-2-lessons-14-16-ui.js`.
+Run `node --test tests/a2-lessons-14-16.test.cjs` for content and grading checks.
