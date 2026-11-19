@@ -8988,9 +8988,9 @@ function grade(q,value){
 }
 const modes=['guide','vocabulary','flash','vocabQuiz','grammar','verbs','listening','reading','writing','speaking'];
 function sanitize(raw){
- const state={lesson:14,mode:'guide',entries:{},learned:{}};
+ const state={lesson:Math.min(...Object.keys(data.lessons).map(Number)),mode:'guide',entries:{},learned:{}};
  if(!raw || typeof raw!=='object')return state;
- if([14,15,16].includes(raw.lesson))state.lesson=raw.lesson;
+ if(Number.isInteger(raw.lesson)&&Object.prototype.hasOwnProperty.call(data.lessons,raw.lesson))state.lesson=raw.lesson;
  if(modes.includes(raw.mode))state.mode=raw.mode;
  for(const q of data.exercises){
   const e=raw.entries?.[q.id];

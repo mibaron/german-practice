@@ -32,7 +32,7 @@ function updateProgress(){
  const lessonQuestions=P.exercises.filter(q=>q.lesson===state.lesson&&!q.manual);
  const correct=lessonQuestions.filter(q=>state.entries[q.id]?.checked&&P.grade(q,state.entries[q.id].value)==='correct').length;
  const learned=P.words.filter(w=>w.lesson===state.lesson&&state.learned[w.id]).length;
- $('progress').textContent=fa(correct)+' / '+fa(lessonQuestions.length)+' پاسخ درست · '+fa(learned)+' / ۵۰ واژه';
+ $('progress').textContent=fa(correct)+' / '+fa(lessonQuestions.length)+' پاسخ درست · '+fa(learned)+' / '+fa(P.words.filter(w=>w.lesson===state.lesson).length)+' واژه';
 }
 function counts(mode){return mode==='guide'?P.lessons[state.lesson].guide.length:['flash','vocabulary'].includes(mode)?P.words.filter(w=>w.lesson===state.lesson).length:P.exercises.filter(q=>q.lesson===state.lesson&&q.mode===mode).length;}
 function toolbar(){
@@ -165,7 +165,7 @@ $('checkPage').addEventListener('click',()=>{visible.filter(q=>q.answers&&!q.man
 $('export').addEventListener('click',()=>{
  const payload={schemaVersion:1,courseId:P.courseId,state};
  const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
- const a=node('a');a.href=url;a.download='menschen-a22-lessons-14-16-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ const a=node('a');a.href=url;a.download='menschen-a22-lessons-13-24-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
 $('import').addEventListener('click',()=>$('importFile').click());
 $('importFile').addEventListener('change',async()=>{

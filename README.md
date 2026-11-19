@@ -216,34 +216,41 @@ Files: `a2-1-lessons-11-12.html`, `a2-1-lessons-11-12.js`, and
 `a2-1-lessons-11-12-ui.js`. No build or external dependencies are required.
 Run the content/grading checks with `node --test tests/a2-lessons-11-12.test.cjs`.
 
-## Menschen A2.2 · Lessons 14–16
+## Menschen A2.2 · Complete lessons 13–24
 
 Open [the A2.2 study room](a2-2-lessons-14-16.html) from the home-page banner.
-It has 150 vocabulary entries with German examples and Persian meanings,
-reversible flashcards, and 524 practice tasks:
+The original page URL is retained. All twelve lessons now share the same
+searchable study room, with 600 vocabulary entries and reversible flashcards,
+85 Persian grammar notes, 24 original reading passages, and 2,204 practice tasks:
 
-- 285 vocabulary recall, article and plural questions
-- 96 grammar questions (gaps, sentence transformations, word order and corrections)
-- 83 verb-form questions covering 12 verbs
-- 18 listening/dictation tasks using device speech synthesis
-- 30 comprehension questions across six original reading passages
-- Six writing and six speaking tasks with model answers and checklists
+- 1,152 vocabulary recall, article and plural questions
+- 384 grammar questions covering the specific grammar of each lesson
+- 428 verb-form questions across 52 lesson-specific verb entries
+- 72 listening/dictation tasks using device speech synthesis
+- 120 comprehension questions across 24 reading passages
+- 24 writing and 24 speaking prompts with models and checklists
 
-Lesson 14 covers postal services, gifts, present passive and thank-you messages.
-Lesson 15 covers television/media habits, dative/accusative objects and pronoun
-order. Lesson 16 covers hotel reservations, indirect questions with question
-words or `ob`, and directions with `durch`, `an … vorbei` and `gegenüber von`.
-Each lesson includes Persian grammar notes and new German examples. This is
-original supplementary practice aligned to the publisher's lesson guides, not
-an exhaustive transcription of the textbook or its exercise/audio content.
+Coverage: L13 language-learning experiences and `als`; L14 postal services,
+gifts and present passive; L15 media and object order; L16 hotels, indirect
+questions and directions; L17 travel destinations and location prepositions;
+L18 weather, verb/preposition combinations and `wo(r)-/da(r)-`; L19 culture and
+`aus/von`; L20 books and modal-verb Präteritum; L21 documents, `welch-/dies-`,
+demonstrative pronouns and `lassen`; L22 online services and `bis/seit(dem)`;
+L23 work and nominative/accusative relative clauses; L24 life abroad and
+Präteritum. Material is original supplementary practice aligned to the
+publisher's syllabus, not a transcription of the textbook or its audio.
 
-The study room includes search, topic filters, 12-question pages, reversible
-flashcards, learned-word filtering, per-answer feedback, and browser speech
-synthesis when available. Free responses are self-reviewed rather than graded.
-Progress uses a dedicated A2.2 storage key and supports validated JSON backup
-import/export. It never replaces A1 or A2.1 progress. Revealing an answer does
-not award credit. All static assets are local; no build step is needed.
+The room supports topic filters, search, 12-question pages, learned-word
+filtering, per-answer explanations and browser speech synthesis when supported.
+Free responses are self-reviewed, not automatically scored. Revealing an
+answer does not award credit. Drafts, checked answers and learned words can be
+exported and imported as JSON.
 
-Files: `a2-2-lessons-14-16.html`, `a2-2-lessons-14-16.css`,
-`a2-2-lessons-14-16.js`, and `a2-2-lessons-14-16-ui.js`.
-Run `node --test tests/a2-lessons-14-16.test.cjs` for content and grading checks.
+The existing course ID, storage key, item IDs and original L14–16 content are
+retained. Old L14–16 backups remain compatible; A1 and A2.1 progress is separate.
+The lesson menu and saved-lesson validation cover all twelve lessons.
+
+Files: the existing `a2-2-lessons-14-16.html/.css/.js` and
+`a2-2-lessons-14-16-ui.js`, plus `a2-2-remaining-lessons.js` loaded between the
+original data and UI. No build step or third-party package is required.
+Run `node --test tests/*.test.cjs` for content, grading and compatibility checks.
