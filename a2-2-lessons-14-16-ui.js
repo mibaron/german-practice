@@ -23,6 +23,8 @@ function speak(text){
  speechSynthesis.speak(utterance);
 }
 function isWords(){return ['vocabulary','flash'].includes(state.mode);}
+function isExercise(){return !isWords()&&state.mode!=='guide';}
+function changeMode(mode){state.mode=mode;page=0;topic='all';save();toolbar();render();}
 function allForMode(){
  if(state.mode==='guide')return P.lessons[state.lesson].guide.map((g,i)=>({id:'guide-'+i,heading:g[0],note:g[1],example:g[2]}));
  if(isWords())return P.words.filter(w=>w.lesson===state.lesson);
@@ -37,11 +39,11 @@ function updateProgress(){
 function counts(mode){return mode==='guide'?P.lessons[state.lesson].guide.length:['flash','vocabulary'].includes(mode)?P.words.filter(w=>w.lesson===state.lesson).length:P.exercises.filter(q=>q.lesson===state.lesson&&q.mode===mode).length;}
 function toolbar(){
  $('lesson').value=String(state.lesson);
- $('modes').replaceChildren();
+ $('modeSelect').replaceChildren();
  for(const mode of P.modes){
-  const b=button(names[mode]+' · '+fa(counts(mode)),()=>{state.mode=mode;page=0;topic='all';save();toolbar();render();});
-  b.dataset.mode=mode;b.setAttribute('aria-pressed',String(state.mode===mode));$('modes').append(b);
+  const option=node('option',names[mode]+' · '+fa(counts(mode)));option.value=mode;$('modeSelect').append(option);
  }
+ $('modeSelect').value=state.mode;
  $('sectionTitle').textContent=names[state.mode]+' · درس '+fa(state.lesson);
  $('lessonSubtitle').textContent=P.lessons[state.lesson].fa;
  const topics=[...new Set(allForMode().map(q=>q.topic).filter(Boolean))];
@@ -51,7 +53,6 @@ function toolbar(){
  if(!topics.includes(topic))topic='all';$('topic').value=topic;
  $('topicWrap').hidden=isWords()||state.mode==='guide';
  $('remainingWrap').hidden=!isWords();$('directionWrap').hidden=state.mode!=='flash';
- $('checkPage').hidden=['guide','flash','vocabulary','writing','speaking'].includes(state.mode);
  updateProgress();
 }
 function searchable(item){
@@ -74,6 +75,29 @@ function check(q){
  entry.checked=Boolean(entry.value.trim())&&!q.manual;state.entries[q.id]=entry;
  feedback(q,$(q.id+'-feedback'));
 }
+function updateAction(){
+ const q=visible[0],entry=q&&state.entries[q.id];
+ $('checkPage').hidden=!isExercise()||!q||q.manual;
+ const correct=entry?.checked&&P.grade(q,entry.value)==='correct';
+ $('checkPage').textContent=correct?(page+1<filtered.length?'درست! سؤال بعدی ←':'✓ پاسخ درست'):'بررسی پاسخ';
+ $('checkPage').disabled=Boolean(correct&&page+1>=filtered.length);
+}
+function answerFocused(){return document.activeElement?.classList.contains('answer');}
+function move(step){
+ const keepTyping=answerFocused();page+=step;render();
+ const target=keepTyping?document.querySelector('.answer'):$('content');
+ target?.focus({preventScroll:true});
+ if(keepTyping)target?.scrollIntoView({block:'center',behavior:'instant'});
+ else $('content').scrollIntoView({block:'start',behavior:'instant'});
+}
+function submitAnswer(q){
+ const entry=state.entries[q.id];
+ if(entry?.checked&&P.grade(q,entry.value)==='correct'){
+  if(page+1<filtered.length)move(1);return;
+ }
+ check(q);save();updateProgress();updateAction();
+ $(q.id+'-answer').setAttribute('aria-invalid',String(P.grade(q,state.entries[q.id].value)==='wrong'));
+}
 function exerciseCard(q){
  const form=node('form',undefined,'card');form.id=q.id;
  const title=node('h3',q.topic);title.id=q.id+'-title';form.setAttribute('aria-labelledby',title.id);
@@ -83,18 +107,28 @@ function exerciseCard(q){
  const label=node('label',q.manual?(q.mode==='speaking'?'یادداشت مکالمهٔ تو':'نوشتهٔ تو'):'پاسخ تو','question-label');label.htmlFor=q.id+'-answer';form.append(label);
  const input=node(q.options?'select':q.sentence||q.manual?'textarea':'input',undefined,'answer');
  input.id=q.id+'-answer';input.name=q.id;input.dir='ltr';input.lang='de';input.autocomplete='off';input.spellcheck=false;
+ input.setAttribute('autocapitalize','none');input.setAttribute('autocorrect','off');
+ input.setAttribute('enterkeyhint',q.manual?'enter':'go');
+ if(!q.options){input.setAttribute('inputmode','text');if(input.tagName==='TEXTAREA')input.rows=q.manual?5:2;}
  if(q.options){const blank=node('option','— انتخاب کن —');blank.value='';input.append(blank);q.options.forEach(v=>{const o=node('option',v);o.value=v;input.append(o);});}else input.maxLength=8000;
  input.value=state.entries[q.id]?.value||'';
  input.setAttribute('aria-describedby',q.id+'-feedback');
- input.addEventListener('input',()=>{state.entries[q.id]={value:input.value,checked:false};$(q.id+'-feedback').replaceChildren();save();updateProgress();});
- input.addEventListener('keydown',e=>{if(e.key==='Enter'&&input.tagName==='TEXTAREA'&&!q.manual&&!e.shiftKey){e.preventDefault();form.requestSubmit();}});
+ input.addEventListener('input',()=>{state.entries[q.id]={value:input.value,checked:false};input.removeAttribute('aria-invalid');$(q.id+'-feedback').replaceChildren();save();updateProgress();updateAction();});
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!q.manual&&!q.options&&!e.shiftKey&&!e.isComposing){e.preventDefault();form.requestSubmit();}});
  form.append(input);
+ if(!q.options){
+  const keys=node('div',undefined,'letter-keys');keys.dir='ltr';keys.setAttribute('aria-label','حروف آلمانی');
+  for(const letter of ['ä','ö','ü','ß']){
+   const key=button(letter,()=>{const start=input.selectionStart??input.value.length,end=input.selectionEnd??start;input.setRangeText(letter,start,end,'end');input.focus({preventScroll:true});input.dispatchEvent(new Event('input',{bubbles:true}));},'secondary');
+   key.lang='de';key.setAttribute('aria-label','درج '+letter);key.addEventListener('pointerdown',e=>e.preventDefault());keys.append(key);
+  }
+  form.append(keys,node('p',q.manual?'نوشته‌ات خودکار ذخیره می‌شود. Enter یک خط جدید می‌سازد.':'Enter: بررسی / سؤال بعدی · می‌توانی ae، oe، ue و ss هم بنویسی.','input-hint'));
+ }
  const actions=node('div',undefined,'actions');
- if(!q.manual){const b=node('button','بررسی');b.type='submit';actions.append(b);}
  actions.append(button(q.manual?'نمونه و چک‌لیست':'نمایش پاسخ',()=>feedback(q,$(q.id+'-feedback'),true)));
  form.append(actions);
  const box=node('div',undefined,'feedback');box.id=q.id+'-feedback';box.setAttribute('aria-live','polite');form.append(box);
- form.addEventListener('submit',e=>{e.preventDefault();check(q);save();updateProgress();});
+ form.addEventListener('submit',e=>{e.preventDefault();if(!q.manual)submitAnswer(q);});
  if(state.entries[q.id]?.checked)feedback(q,box);
  return form;
 }
@@ -133,16 +167,18 @@ function flashCard(w){
 function render(){
  if('speechSynthesis' in window)speechSynthesis.cancel();
  filtered=allForMode().filter(item=>(topic==='all'||item.topic===topic)&&(!query||searchable(item).includes(P.normalize(query)))&&(!isWords()||!remaining||!state.learned[item.id]));
- const size=state.mode==='flash'?1:12,pages=Math.ceil(filtered.length/size);
+ const size=isExercise()||state.mode==='flash'?1:12,pages=Math.ceil(filtered.length/size);
  page=Math.max(0,Math.min(page,Math.max(0,pages-1)));visible=filtered.slice(page*size,(page+1)*size);
  $('content').replaceChildren();$('prev').disabled=page===0;$('next').disabled=page+1>=pages;
- $('pageStatus').textContent=filtered.length?fa(page*size+1)+' تا '+fa(Math.min((page+1)*size,filtered.length))+' از '+fa(filtered.length):'۰ مورد';
+ document.body.classList.toggle('exercise-mode',isExercise());
+ updateAction();
+ $('pageStatus').textContent=filtered.length?(size===1?fa(page+1):fa(page*size+1)+' تا '+fa(Math.min((page+1)*size,filtered.length)))+' از '+fa(filtered.length):'۰ مورد';
  if(!visible.length){$('content').append(node('p','موردی با این فیلتر پیدا نشد. جست‌وجو یا فیلترها را تغییر بده.','empty'));return;}
  if(state.mode==='flash'){$('content').append(flashCard(visible[0]));return;}
  if(state.mode==='reading'){
   for(const id of [...new Set(visible.map(q=>q.passageId))]){
-   const p=P.passages.find(p=>p.id===id),section=node('section',undefined,'reading-group'),article=node('article',undefined,'passage');
-   article.append(node('h3',p.title),german(p.text),button('خواندن متن با صدای دستگاه',()=>speak(p.text)));
+   const p=P.passages.find(p=>p.id===id),section=node('section',undefined,'reading-group'),article=node('details',undefined,'passage');
+   article.open=true;article.append(node('summary',p.title+' · متن خواندنی'),german(p.text),button('خواندن متن با صدای دستگاه',()=>speak(p.text)));
    const grid=node('div',undefined,'grid');visible.filter(q=>q.passageId===id).forEach(q=>grid.append(exerciseCard(q)));section.append(article,grid);$('content').append(section);
   }return;
  }
@@ -155,13 +191,37 @@ function render(){
  $('content').append(grid);
 }
 $('lesson').addEventListener('change',()=>{state.lesson=Number($('lesson').value);page=0;topic='all';save();toolbar();render();});
+ $('modeSelect').addEventListener('change',()=>changeMode($('modeSelect').value));
 $('search').addEventListener('input',()=>{query=$('search').value;page=0;render();});
 $('topic').addEventListener('change',()=>{topic=$('topic').value;page=0;render();});
 $('remaining').addEventListener('change',()=>{remaining=$('remaining').checked;page=0;render();});
 $('direction').addEventListener('change',()=>{direction=$('direction').checked;render();});
-$('prev').addEventListener('click',()=>{page--;render();$('content').focus();});
-$('next').addEventListener('click',()=>{page++;render();$('content').focus();});
-$('checkPage').addEventListener('click',()=>{visible.filter(q=>q.answers&&!q.manual).forEach(check);save();updateProgress();});
+$('prev').addEventListener('click',()=>move(-1));
+$('next').addEventListener('click',()=>move(1));
+$('checkPage').addEventListener('click',()=>{if(visible[0])submitAnswer(visible[0]);});
+// Keep the active answer focused when a touch user checks or advances.
+for(const id of ['prev','next','checkPage'])$(id).addEventListener('pointerdown',e=>{if(answerFocused())e.preventDefault();});
+function syncViewport(){
+ const viewport=window.visualViewport;
+ const inset=viewport?Math.max(0,window.innerHeight-viewport.height-viewport.offsetTop):0;
+ document.documentElement.style.setProperty('--keyboard-inset',inset+'px');
+}
+let viewportFrame;
+function keepAnswerVisible(){
+ cancelAnimationFrame(viewportFrame);
+ viewportFrame=requestAnimationFrame(()=>{
+  if(!answerFocused())return;
+  const box=document.activeElement.getBoundingClientRect(),bar=$('practiceBar').getBoundingClientRect();
+  const top=(window.visualViewport?.offsetTop||0)+12,bottom=bar.top-12;
+  if(box.bottom>bottom)window.scrollBy(0,Math.min(box.bottom-bottom,box.top-top));
+  else if(box.top<top)window.scrollBy(0,box.top-top);
+ });
+}
+function resizeViewport(){syncViewport();keepAnswerVisible();}
+window.visualViewport?.addEventListener('resize',resizeViewport);
+window.visualViewport?.addEventListener('scroll',syncViewport);
+window.addEventListener('resize',resizeViewport);
+document.addEventListener('focusin',keepAnswerVisible);syncViewport();
 $('export').addEventListener('click',()=>{
  const payload={schemaVersion:1,courseId:P.courseId,state};
  const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));

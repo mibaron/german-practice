@@ -240,8 +240,14 @@ L23 work and nominative/accusative relative clauses; L24 life abroad and
 Präteritum. Material is original supplementary practice aligned to the
 publisher's syllabus, not a transcription of the textbook or its audio.
 
-The room supports topic filters, search, 12-question pages, learned-word
-filtering, per-answer explanations and browser speech synthesis when supported.
+The room presents one exercise at a time, with compact lesson/section selectors,
+collapsible search and topic filters, and a persistent previous/check/next bar.
+The bar follows the visual viewport above a mobile keyboard. Checking and
+advancing retain answer focus; Enter checks an answer and, once correct,
+advances. Free-writing Enter still inserts a new line. German letter buttons
+insert at the cursor, and ae/oe/ue/ss answers remain accepted.
+Vocabulary and grammar guides retain their browseable card grids. Learned-word
+filtering, per-answer explanations and device speech synthesis remain available.
 Free responses are self-reviewed, not automatically scored. Revealing an
 answer does not award credit. Drafts, checked answers and learned words can be
 exported and imported as JSON.
@@ -254,3 +260,7 @@ Files: the existing `a2-2-lessons-14-16.html/.css/.js` and
 `a2-2-lessons-14-16-ui.js`, plus `a2-2-remaining-lessons.js` loaded between the
 original data and UI. No build step or third-party package is required.
 Run `node --test tests/*.test.cjs` for content, grading and compatibility checks.
+With Playwright and Chrome installed, run `node tests/a22-mobile.browser.cjs`
+for navigation, focus, typing, persistence, responsive layout and simulated
+keyboard-viewport checks. `PLAYWRIGHT_MODULE` can point to a shared installation.
+These browser checks do not replace testing an actual iOS or Android keyboard.
