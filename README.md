@@ -240,12 +240,15 @@ L23 work and nominative/accusative relative clauses; L24 life abroad and
 Präteritum. Material is original supplementary practice aligned to the
 publisher's syllabus, not a transcription of the textbook or its audio.
 
-The room presents one exercise at a time, with compact lesson/section selectors,
-collapsible search and topic filters, and a persistent previous/check/next bar.
-The bar follows the visual viewport above a mobile keyboard. Checking and
-advancing retain answer focus; Enter checks an answer and, once correct,
-advances. Free-writing Enter still inserts a new line. German letter buttons
-insert at the cursor, and ae/oe/ue/ss answers remain accepted.
+The study room starts with one exercise at a time and resumes at the first
+unresolved question. Enter or the check button submits a typed answer. A correct
+answer immediately opens the next question and focuses its answer field.
+Multiple-choice answers can be submitted with a single tap or a number key
+while the choices have focus. The progress bar, streak and recap show how the
+round is going and make it easy to retry skipped items. The action bar follows
+the visual viewport when a mobile answer field has focus. Free-writing Enter
+inserts a new line. German letter buttons insert at the cursor, and
+ae/oe/ue/ss answers remain accepted.
 Vocabulary and grammar guides retain their browseable card grids. Learned-word
 filtering, per-answer explanations and device speech synthesis remain available.
 Free responses are self-reviewed, not automatically scored. Revealing an

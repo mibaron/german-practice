@@ -22,16 +22,21 @@ const root=path.join(__dirname,'..');
   await page.locator('#lesson').selectOption('14');await mode('grammar');
   assert.equal(await page.locator('form.card').count(),1);
   let bounds=await page.locator('.answer').boundingBox();
-  assert.ok(bounds.y+bounds.height<700,'answer fits the initial mobile screen');
+  assert.ok(bounds.y+bounds.height<365,'answer fits in the upper half of the initial mobile screen');
   await page.locator('.answer').fill('werden');await page.locator('.answer').press('Enter');
   assert.match(await page.locator('.feedback').innerText(),/نیاز به اصلاح/);
   assert.equal(await page.locator('.answer').evaluate(e=>e===document.activeElement),true);
-  await page.locator('.answer').fill('wird');await page.locator('#checkPage').tap();
-  assert.match(await page.locator('.feedback').innerText(),/درست است/);
-  assert.equal(await page.locator('.answer').evaluate(e=>e===document.activeElement),true,'check keeps focus');
-  await page.locator('#checkPage').tap();
+  await page.locator('.answer').fill('wird');await page.locator('.answer').press('Enter');
   assert.equal(await page.locator('form.card').getAttribute('id'),'a22-14-g02');
-  assert.equal(await page.locator('.answer').evaluate(e=>e===document.activeElement),true,'next keeps focus');
+  assert.equal(await page.locator('.answer').evaluate(e=>e===document.activeElement),true,'one Enter checks, advances, and focuses');
+  assert.match(await page.locator('#runMessage').innerText(),/درست بود/);
+  await page.locator('.answer').fill('werden');await page.locator('#checkPage').tap();
+  assert.equal(await page.locator('form.card').getAttribute('id'),'a22-14-g03','one tap checks and advances');
+  assert.match(await page.locator('#runStreak').innerText(),/۲ درست پیاپی/);
+  assert.equal(await page.locator('#runMeter').evaluate(e=>e.value),2);
+  await page.reload();
+  assert.equal(await page.locator('form.card').getAttribute('id'),'a22-14-g03','resume at first unresolved item');
+  await page.locator('#prev').tap();
   await page.locator('#prev').tap();assert.equal(await page.locator('.answer').inputValue(),'wird');
   // Editing an accepted answer clears its checked state; IME confirmation is not submission.
   await page.locator('.answer').fill('xyz');
@@ -43,6 +48,44 @@ const root=path.join(__dirname,'..');
   assert.equal(await page.locator('.answer').inputValue(),'xäz');
   assert.equal(await page.locator('.answer').evaluate(e=>e.selectionStart),2);
   await page.reload();assert.equal(await page.locator('.answer').inputValue(),'xäz');
+  await page.locator('#studySettings summary').tap();
+  await page.locator('#search').fill('کدام جمله یعنی «کارت در حال نوشته شدن است»');
+  await page.locator('#studySettings summary').tap();
+  assert.equal(await page.locator('form.card select').count(),0);
+  assert.equal(await page.locator('.choices button').count(),2);
+  assert.equal(await page.locator('#checkPage').isVisible(),false);
+  await page.locator('.choices button').filter({hasText:'Mina hat'}).tap();
+  assert.match(await page.locator('.feedback').innerText(),/دوباره/);
+  assert.doesNotMatch(await page.locator('.feedback').innerText(),/Die Karte/);
+  assert.equal(await page.locator('#runMeter').evaluate(e=>e.value),0);
+  await page.locator('.choices button').filter({hasText:/^Die Karte wird/}).tap();
+  assert.match(await page.locator('.run-summary').innerText(),/بخش کامل شد/);
+  assert.match(await page.locator('.run-summary').innerText(),/۱ از ۱ پاسخ درست/);
+  await page.locator('#studySettings summary').tap();
+  await page.locator('#search').fill('کدام درخواست برای ارسال بسته است');
+  await page.locator('#studySettings summary').tap();
+  assert.equal(await page.locator('.choices button').count(),3);
+  await page.locator('#next').tap();
+  assert.match(await page.locator('.run-summary').innerText(),/پایان دور/);
+  await page.getByRole('button',{name:'تمرین سؤال‌های باقی‌مانده'}).tap();
+  await page.keyboard.press('1');
+  assert.match(await page.locator('.run-summary').innerText(),/بخش کامل شد/);
+  await page.locator('#studySettings summary').tap();
+  await page.locator('#search').fill('');
+  await page.locator('#studySettings summary').tap();
+  // Confirm that switching answer formats requires no extra Next or focus tap.
+  await page.evaluate(()=>{
+   for(let step=0;step<23;step++)document.getElementById('next').click();
+  });
+  assert.equal(await page.locator('form.card').getAttribute('id'),'a22-14-g24');
+  await page.locator('.answer').fill('Im Saal wird getanzt.');
+  await page.keyboard.press('Enter');
+  // The two-option question was answered above, so the next input is g26.
+  assert.equal(await page.locator('form.card').getAttribute('id'),'a22-14-g26');
+  await page.locator('#prev').tap();
+  await page.locator('.choices button').filter({hasText:/^Die Karte wird/}).tap();
+  assert.equal(await page.locator('form.card').getAttribute('id'),'a22-14-g26');
+  assert.equal(await page.locator('.answer').evaluate(e=>e===document.activeElement),true);
   await mode('writing');await page.locator('.answer').fill('Hallo');await page.locator('.answer').press('Enter');
   await page.locator('.answer').press('End');await page.locator('.answer').press('x');
   assert.match(await page.locator('.answer').inputValue(),/\n/);
@@ -56,11 +99,17 @@ const root=path.join(__dirname,'..');
     for(const mode of ['vocabQuiz','grammar','verbs','listening','reading','writing','speaking']){
      const sel=document.getElementById('modeSelect');sel.value=mode;sel.dispatchEvent(new Event('change'));
      const expected=window.A22Practice.exercises.filter(q=>q.lesson===lesson&&q.mode===mode);
+     const prev=document.getElementById('prev');
+     while(!prev.disabled)prev.click();
      for(let i=0;i<expected.length;i++){
       if(document.querySelector('form.card')?.id!==expected[i].id)throw Error('Unreachable '+expected[i].id);
       n++;if(i<expected.length-1)document.getElementById('next').click();
      }
-     if(!document.getElementById('next').disabled)throw Error('Last question not bounded');
+     const next=document.getElementById('next');
+     if(!next.disabled){
+      next.click();
+      if(!document.querySelector('.run-summary'))throw Error('Last question not bounded');
+     }
     }
    }return n;
   });assert.equal(reached,2204);
@@ -98,7 +147,16 @@ const root=path.join(__dirname,'..');
   await page.locator('#studySettings summary').click();
   await page.setViewportSize({width:1280,height:960});await page.evaluate(()=>scrollTo(0,0));
   if(process.env.QA_OUTPUT)await page.screenshot({path:path.join(process.env.QA_OUTPUT,'a22-desktop-redesign.png')});
-  assert.deepEqual(errors,[]);
-  console.log('PASS: 2,204 reachable exercises, mobile focus/Enter/IME/umlauts, drafts, filters, 4 widths, simulated keyboard viewports.');
+  const desktop=await browser.newPage({viewport:{width:1440,height:900}});
+  await desktop.goto(page.url());
+  await desktop.locator('#lesson').selectOption('14');
+  await desktop.locator('.answer').fill('wird');
+  await desktop.keyboard.press('Enter');
+  await desktop.keyboard.type('werden');
+  await desktop.keyboard.press('Enter');
+  assert.equal(await desktop.locator('form.card').getAttribute('id'),'a22-14-g03');
+  assert.equal(await desktop.locator('.answer').evaluate(e=>e===document.activeElement),true);
+  assert.equal(errors.length,0,errors[0]);
+  console.log('PASS: 2,204 reachable exercises, one-action advancement, choice taps and number keys, retry, streak, recap, resume, drafts, responsive and keyboard viewports.');
  }finally{await browser?.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;});

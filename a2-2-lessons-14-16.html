@@ -13,16 +13,13 @@
 <a class="skip" href="#content">رفتن به تمرین‌ها</a>
 <main>
 <header>
-<div class="top"><a href="index.html">بازگشت به اتاق تمرین ←</a><a href="a2-1-lessons-11-12.html">مرور درس‌های ۱۱ و ۱۲</a></div>
-<p class="eyebrow" lang="de" dir="ltr">MENSCHEN · A2.2</p>
-<h1>هر روز کمی روان‌تر.</h1>
-<p class="intro">درس‌های ۱۳ تا ۲۴ · هر بار یک قدم، هر روز کمی تمرین.</p>
+<h1>تمرین آلمانی <bdi>A2.2</bdi></h1>
+<a href="index.html">خانه</a>
 </header>
 <section class="controls" aria-label="انتخاب محتوا">
 <label for="lesson">درس<select id="lesson"><option value="13">۱۳ · زبان و خاطرات</option><option value="14">۱۴ · پست و مجهول</option><option value="15">۱۵ · رسانه و دو مفعول</option><option value="16">۱۶ · هتل و سؤال غیرمستقیم</option><option value="17">۱۷ · سفر و مقصد</option><option value="18">۱۸ · هوا و حرف اضافه</option><option value="19">۱۹ · فرهنگ و مبدأ</option><option value="20">۲۰ · کتاب و گذشتهٔ مُدال</option><option value="21">۲۱ · مدارک و lassen</option><option value="22">۲۲ · ثبت‌نام و زمان</option><option value="23">۲۳ · شغل و جملهٔ موصولی</option><option value="24">۲۴ · خارج از کشور و گذشته</option></select></label>
 <label for="modeSelect">بخش یادگیری<select id="modeSelect"></select></label>
 </section>
-<div class="section-heading"><div><h2 id="sectionTitle"></h2><p id="lessonSubtitle" class="muted"></p></div><span id="progress" role="status"></span></div>
 <details id="studySettings" class="study-settings"><summary>جست‌وجو و فیلترها</summary>
 <div class="filters">
 <label for="search">جست‌وجو<input id="search" type="search" placeholder="واژه، معنی یا موضوع…" autocomplete="off" enterkeyhint="search"></label>
@@ -32,15 +29,24 @@
 </div>
 </details>
 <p id="notice" role="status"></p>
+<div id="runHud" class="run-hud" hidden>
+<div class="run-stats"><span id="runScore"></span><span id="runStreak"></span></div>
+<progress id="runMeter" aria-label="پیشرفت این بخش" value="0" max="1"></progress>
+</div>
 <div id="content" tabindex="-1"></div>
-<div class="pager" id="practiceBar" aria-label="کنترل تمرین"><span id="pageStatus" aria-live="polite"></span><div class="pager-actions"><button id="prev" class="secondary" type="button" aria-label="تمرین قبلی">قبلی</button><button id="checkPage" type="button">بررسی پاسخ</button><button id="next" class="secondary" type="button" aria-label="تمرین بعدی">بعدی</button></div></div>
-<p id="storageStatus" class="muted" role="status"></p>
+<div class="pager" id="practiceBar" aria-label="کنترل تمرین">
+<div class="pager-info"><span id="pageStatus"></span><span id="runMessage" role="status"></span></div>
+<div class="pager-actions"><button id="prev" class="secondary" type="button" aria-label="تمرین قبلی">قبلی</button><button id="checkPage" type="button">بررسی <kbd>↵</kbd></button><button id="next" class="secondary" type="button">بعدی</button></div>
+</div>
+<details id="lastExplanation" hidden><summary>توضیح جواب قبلی</summary><p id="lastReason"></p></details>
+<p id="storageStatus" class="muted" role="status" hidden></p>
+<details class="backup"><summary>پیشرفت کل درس و پشتیبان</summary>
+<p id="progress" class="muted"></p>
 <p id="inventory" class="muted"></p>
-<details class="backup"><summary>پشتیبان پیشرفت</summary><p>پاسخ‌ها، نوشته‌ها و واژه‌های یادگرفته‌شدهٔ درس‌های A2.2 در همین مرورگر ذخیره می‌شوند.</p>
 <button type="button" id="export" class="secondary">دریافت پشتیبان</button> <button type="button" id="import" class="secondary">وارد کردن پشتیبان</button>
 <input type="file" id="importFile" accept=".json,application/json" hidden>
+<footer><a href="a2-1-lessons-11-12.html">مرور درس‌های ۱۱ و ۱۲</a><p>تمرین‌های تألیفی. تلفظ با صدای دستگاه پخش می‌شود.</p><p id="sources"></p></footer>
 </details>
-<footer><p>محتوای تألیفی برای تمرین مباحث درس‌ها، با مثال‌ها و متن‌های جدید. پاسخ‌های آزاد نمونه و چک‌لیست دارند؛ خودکار نمره نمی‌گیرند. تلفظ با صدای مصنوعی دستگاه در مرورگرهای پشتیبانی‌شده در دسترس است.</p><p id="sources"></p></footer>
 <noscript>برای نمایش تمرین‌ها، JavaScript مرورگر را فعال کن.</noscript>
 </main>
 </body>
